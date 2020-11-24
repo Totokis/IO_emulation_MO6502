@@ -14,6 +14,7 @@ namespace EmulatorMS6502 {
 
 
         #region flags
+        /*
         public enum Flags {
             C = (1 << 0),   // Carry Bit            00000001
             Z = (1 << 1),   // Zero                 00000010
@@ -24,13 +25,14 @@ namespace EmulatorMS6502 {
             V = (1 << 6),   // Overflow             01000000
             N = (1 << 7),	// Negative             10000000
         }
+        */
 
         public static readonly Dictionary<Char, Byte> Flag
             = new Dictionary<Char, Byte> {
                 { 'C',  (1 << 0) },     // Carry Bit            00000001
                 { 'Z',  (1 << 1) },     // Zero                 00000010
                 { 'I' , (1 << 2) },     // Disable Interrupts   00000100
-                 { 'D' , (1 << 3) },     // Decimal Mode         00001000
+                { 'D' , (1 << 3) },     // Decimal Mode         00001000
                 { 'B' , (1 << 4) },     // Break                00010000
                 { 'U' , (1 << 5) },     // Unused               00100000
                 { 'V' , (1 << 6) },     // Overflow             01000000
@@ -65,13 +67,28 @@ namespace EmulatorMS6502 {
         #region functions
         private uint test = 2;
 
-        Byte getFlag(Byte flag) {
+        // Jeżeli dobrze myślę, to funkcja sprawdza po prostu wartość danej flagi która znajduje się w określonym miejscu w rejestrze statusu (statusRegister) i ją wypluwa, ultra proste 
+        Byte getFlag(char flagChar) {
 
-            if((statusRegister & ) > 0) return 1;
+            // & to jest po prostu dodawanie na bitach
+            if((statusRegister & Flag[flagChar]) > 0) return 1;
             else return 0;
         }
 
-        void setFlag(Flags f, bool parametr) { }
+        /// <summary>
+        /// Ustawia wartość danej flagi w statusRegister na docelową
+        /// </summary>
+        /// <param name="parametr">Target value of flag </param>
+        void setFlag(char flagChar, bool parametr) {
+            if(parametr) {
+                // |= to poprostu bitwise or
+                statusRegister |= Flag[flagChar];
+            }
+            else {
+                // &= to po prostu bitwise and
+                statusRegister &= (byte)~Flag[flagChar];
+            }
+        }
 
         Byte ReadFromBus(UInt16 address) {
             return bus.ReadFromBus(address);
