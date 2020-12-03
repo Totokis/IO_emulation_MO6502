@@ -1,9 +1,10 @@
-﻿using System;
+﻿using EmulatorMS6502;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace EmulatorMS6502 {
-    class MOS6502 {
+namespace EmulatorMOS6502.CPU {
+    public partial class MOS6502 {
 
         Bus bus = null;
         Byte cycles = 0; // Jak coś ten Byte na Inta dać
@@ -12,7 +13,10 @@ namespace EmulatorMS6502 {
         UInt16 rel_address = 0x00;
         Byte opcode = 0x00;
 
+   
+   
 
+       // 1. parita
         #region flags
         /*
         public enum Flags {
@@ -20,8 +24,7 @@ namespace EmulatorMS6502 {
             Z = (1 << 1),   // Zero                 00000010
             I = (1 << 2),   // Disable Interrupts   00000100
             D = (1 << 3),   // Decimal Mode         00001000
-            B = (1 << 4),   // Break                00010000
-            U = (1 << 5),   // Unused               00100000
+ U = (1 << 5),   // Unused               00100000
             V = (1 << 6),   // Overflow             01000000
             N = (1 << 7),	// Negative             10000000
         }
@@ -71,7 +74,7 @@ namespace EmulatorMS6502 {
         Byte getFlag(char flagChar) {
 
             // & to jest po prostu dodawanie na bitach
-            if((statusRegister & Flag[flagChar]) > 0) return 1;
+            if ((statusRegister & Flag[flagChar]) > 0) return 1;
             else return 0;
         }
 
@@ -80,7 +83,7 @@ namespace EmulatorMS6502 {
         /// </summary>
         /// <param name="parametr">Target value of flag </param>
         void setFlag(char flagChar, bool parametr) {
-            if(parametr) {
+            if (parametr) {
                 // |= to poprostu bitwise or
                 statusRegister |= Flag[flagChar];
             }
@@ -104,9 +107,15 @@ namespace EmulatorMS6502 {
 
 
         void Clock() {
-            if(cycles == 0) {
+            if (cycles == 0) {
 
+                opcode = ReadFromBus(programCounter);
+                programCounter++;
+
+                // cycle <= lookup[opcode].cycles;
             }
+
+            cycles--;
         }
 
         void Reset() {
@@ -123,13 +132,15 @@ namespace EmulatorMS6502 {
 
         }
 
+        Byte fetch() {
+            return 4;
+        }
+
 
         #endregion
 
-        private class Instruction {
-            string Name { get; set; }
 
-        }
+
 
         #region operation codes
 
