@@ -11,3 +11,14 @@ C:\Users\Filip\source\repos\EmulatorMS6502\EmulatorMS6502\bin\Debug\netcoreapp3.
 C:\Users\Filip\source\repos\EmulatorMS6502\EmulatorMS6502\obj\Debug\netcoreapp3.1\EmulatorMS6502.dll
 C:\Users\Filip\source\repos\EmulatorMS6502\EmulatorMS6502\obj\Debug\netcoreapp3.1\EmulatorMS6502.pdb
 C:\Users\Filip\source\repos\EmulatorMS6502\EmulatorMS6502\obj\Debug\netcoreapp3.1\EmulatorMS6502.genruntimeconfig.cache
+C:\Users\njana\source\repos\MOS6502_emul\IO_emulation_MO6502\EmulatorMS6502\obj\Debug\netcoreapp3.1\EmulatorMS6502.csprojAssemblyReference.cache
+C:\Users\njana\source\repos\MOS6502_emul\IO_emulation_MO6502\EmulatorMS6502\obj\Debug\netcoreapp3.1\EmulatorMS6502.AssemblyInfoInputs.cache
+C:\Users\njana\source\repos\MOS6502_emul\IO_emulation_MO6502\EmulatorMS6502\obj\Debug\netcoreapp3.1\EmulatorMS6502.AssemblyInfo.cs
+C:\Users\njana\source\repos\MOS6502_emul\IO_emulation_MO6502\EmulatorMS6502\obj\Debug\netcoreapp3.1\EmulatorMS6502.dll
+C:\Users\njana\source\repos\MOS6502_emul\IO_emulation_MO6502\EmulatorMS6502\obj\Debug\netcoreapp3.1\EmulatorMS6502.pdb
+C:\Users\njana\source\repos\MOS6502_emul\IO_emulation_MO6502\EmulatorMS6502\bin\Debug\netcoreapp3.1\EmulatorMS6502.exe
+C:\Users\njana\source\repos\MOS6502_emul\IO_emulation_MO6502\EmulatorMS6502\bin\Debug\netcoreapp3.1\EmulatorMS6502.deps.json
+C:\Users\njana\source\repos\MOS6502_emul\IO_emulation_MO6502\EmulatorMS6502\bin\Debug\netcoreapp3.1\EmulatorMS6502.runtimeconfig.json
+C:\Users\njana\source\repos\MOS6502_emul\IO_emulation_MO6502\EmulatorMS6502\bin\Debug\netcoreapp3.1\EmulatorMS6502.runtimeconfig.dev.json
+C:\Users\njana\source\repos\MOS6502_emul\IO_emulation_MO6502\EmulatorMS6502\bin\Debug\netcoreapp3.1\EmulatorMS6502.dll
+C:\Users\njana\source\repos\MOS6502_emul\IO_emulation_MO6502\EmulatorMS6502\bin\Debug\netcoreapp3.1\EmulatorMS6502.pdb
