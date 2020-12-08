@@ -80,5 +80,13 @@ namespace EmulatorMOS6502.CPU {
             programCounter++;
             return false;
         }
+
+        bool ZP0()
+        {
+            abs_address = (Byte) (ReadFromBus(programCounter));
+            abs_address &= 0x00FF;
+            programCounter++;
+            return false;
+        }
     }
 }
