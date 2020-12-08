@@ -88,5 +88,26 @@ namespace EmulatorMOS6502.CPU {
             programCounter++;
             return false;
         }
+
+        bool ABX()
+        {
+            //konstruujemy adres z dwóch bajtów, dlatego najpierw pobieramy low byte a potem high byte
+            UInt16 lowByte = (Byte) ReadFromBus(programCounter);
+            programCounter++;
+            UInt16 highByte = (Byte) ReadFromBus(programCounter);
+            programCounter++;
+            //łączymy dwa bajty w jeden 16bitowy adres( 16 bitowa też jest magistrala dlatego tak a nie inaczej)
+            abs_address = (UInt16)((highByte << 8) | lowByte);
+            abs_address += x;
+
+            if((abs_address & 0xFF00)!=(highByte << 8))
+                return true;
+            else
+                return false;
+        }
+
+        bool REL(){
+            return false;
+        }
     }
 }
