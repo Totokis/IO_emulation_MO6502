@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Filip\\source\\repos\\EmulatorMS6502\\EmulatorMS6502\\EmulatorMS6502.csproj": {}
+    "C:\\Users\\admin\\source\\repos\\project for IO\\IO_emulation_MO6502\\EmulatorMS6502\\EmulatorMS6502.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Filip\\source\\repos\\EmulatorMS6502\\EmulatorMS6502\\EmulatorMS6502.csproj": {
+    "C:\\Users\\admin\\source\\repos\\project for IO\\IO_emulation_MO6502\\EmulatorMS6502\\EmulatorMS6502.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Filip\\source\\repos\\EmulatorMS6502\\EmulatorMS6502\\EmulatorMS6502.csproj",
+        "projectUniqueName": "C:\\Users\\admin\\source\\repos\\project for IO\\IO_emulation_MO6502\\EmulatorMS6502\\EmulatorMS6502.csproj",
         "projectName": "EmulatorMS6502",
-        "projectPath": "C:\\Users\\Filip\\source\\repos\\EmulatorMS6502\\EmulatorMS6502\\EmulatorMS6502.csproj",
-        "packagesPath": "C:\\Users\\Filip\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Filip\\source\\repos\\EmulatorMS6502\\EmulatorMS6502\\obj\\",
+        "projectPath": "C:\\Users\\admin\\source\\repos\\project for IO\\IO_emulation_MO6502\\EmulatorMS6502\\EmulatorMS6502.csproj",
+        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\admin\\source\\repos\\project for IO\\IO_emulation_MO6502\\EmulatorMS6502\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Filip\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -26,7 +26,6 @@
         },
         "frameworks": {
           "netcoreapp3.1": {
-            "targetAlias": "netcoreapp3.1",
             "projectReferences": {}
           }
         },
@@ -38,7 +37,6 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
-          "targetAlias": "netcoreapp3.1",
           "imports": [
             "net461",
             "net462",
@@ -49,12 +47,22 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[3.1.0, 3.1.0]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[3.1.0, 3.1.0]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.202\\RuntimeIdentifierGraph.json"
         }
       }
     }
