@@ -8,7 +8,8 @@ namespace EmulatorMOS6502.CPU {
 
         Bus bus = null;
         Byte cycles = 0; // Jak coś ten Byte na Inta dać
-        // ogarnąć do czego są te zmienne pomocnicze 
+
+        // Trzyma miejsce w pamięci z którego obecnie odczytujemy
         UInt16 abs_address = 0x0000;
         UInt16 rel_address = 0x00;
         Byte opcode = 0x00;
