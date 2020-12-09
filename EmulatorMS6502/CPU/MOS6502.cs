@@ -14,9 +14,6 @@ namespace EmulatorMOS6502.CPU {
         UInt16 rel_address = 0x00;
         Byte opcode = 0x00;
 
-   
-   
-
        // 1. parita
         #region flags
         /*
@@ -53,23 +50,7 @@ namespace EmulatorMOS6502.CPU {
         Byte statusRegister = 0x00;
         #endregion
 
-        #region Addressing Modes
-        Byte IMP() { throw new NotImplementedException(); }//nie wiem co to 
-        Byte ZP0() { throw new NotImplementedException(); }//przykładowa instrukcja: LDA $FA     ,HEXDUMP: A5 FA|->to jest adresowanie tzw zero page, jeśli  instrukcji podaje się tylko 8 bitowy argument np LDA $FA to automatycznie odniesie się to do pierwszych 256 bajtów pamięci(po więcej wyjaśnień zapraszam na paweł.janusz.com)
-        Byte ZPY() { throw new NotImplementedException(); }//przykładowa instrukcja: LDA $16   |->
-        Byte ABS() { throw new NotImplementedException(); }//przykładowa instrukcja: LDA $FA16   ,HEXDUMP: AD FA 16|-> tutaj podaje się adres z zakresu od 0x0000 do 0xFFFF(64kb), wtedy ta instrukcja odniesie się bezpośrednio do tamtego miejsca na magistrali, w naszym przypadku na magistrali jest tylko ram który zajmuje całą przestrzeń adresową, czyli np pod adresem $FA16 jest wartość 34 to zostanie wczytana ta wartość
-        Byte ABY() { throw new NotImplementedException(); }//przykładowa instrukcja: LDA $16    |->
-        Byte ABX() { throw new NotImplementedException(); }//przykładowa instrukcja: LDA $0200,X ,HEXDUMP: BD 00 02   |-> to oznacza że instrukcja 
-        Byte IZX() { throw new NotImplementedException(); }//przykładowa instrukcja: LDA $16    |->
-        Byte IMM() { throw new NotImplementedException(); }//przykładowa instrukcja: LDA #$17    ,HEXDUMP: A9 17|->dzięki temu argument który zostanie podany w instrukcji będzie wartością której się użyje, czyli LDA #$17 sprawi że $17 zostanie potraktowane jako po wartość a nie jako ADRES gdzie znajduje się jakaś wartość(LDA-> załaduj do rejestru A, #->oznacza właśnie że będziemy chcieli podać wartość, a nie adres, $->używamy dolara po to by wpisać wartość hexadecymalną, czy da się inaczej to nie wiem,)
-        Byte ZPX() { throw new NotImplementedException(); }//przykładowa instrukcja: LDA $16    |->
-        Byte REL() { throw new NotImplementedException(); }//przykładowa instrukcja: LDA $16    |->
-        Byte IND() { throw new NotImplementedException(); }//przykładowa instrukcja: LDA $16    |->
-        Byte IZY() { throw new NotImplementedException(); }//przykładowa instrukcja: LDA $16    |->
-        #endregion
-
         #region functions
-        private uint test = 2;
 
         // Jeżeli dobrze myślę, to funkcja sprawdza po prostu wartość danej flagi która znajduje się w określonym miejscu w rejestrze statusu (statusRegister) i ją wypluwa, ultra proste 
         Byte getFlag(char flagChar) {

@@ -83,9 +83,45 @@ namespace EmulatorMOS6502.CPU {
 
         bool ZP0()
         {
+            //Zero Page Addressing pozwalał za pomocą mniejszej ilości cykli(przez co szybciej) dostać się do danych umieszczonych
+            //na zerowej stronie danych
+            //poniższa implementacja najpierw odczytuje 8 bitowy adres do 16bitowego kontenera
+            //następnie kontener zostaje przysłonięty za pomocą maski, zerując high byte adresu gdyż to adresowanie
+            //odnosi się właśnie do adresu którego high byte wynosi zero, czyli nasze Zero Page
             abs_address = (Byte) (ReadFromBus(programCounter));
             abs_address &= 0x00FF;
             programCounter++;
+            return false;
+        }
+
+        bool ABX()
+        {
+            //konstruujemy adres z dwóch bajtów, dlatego najpierw pobieramy low byte a potem high byte
+            UInt16 lowByte = (Byte) ReadFromBus(programCounter);
+            programCounter++;
+            UInt16 highByte = (Byte) ReadFromBus(programCounter);
+            programCounter++;
+            //łączymy dwa bajty w jeden 16bitowy adres( 16 bitowa też jest magistrala dlatego tak a nie inaczej)
+            abs_address = (UInt16)((highByte << 8) | lowByte);
+            abs_address += x;
+
+            if((abs_address & 0xFF00)!=(highByte << 8))
+                return true;
+            else
+                return false;
+        }
+
+        bool REL(){
+            //Adresowanie używane przy tzw branch instructions np JMP, pozwala na skok conajwyżej o 128 miejsc pamięci
+            rel_address = ReadFromBus(programCounter);
+            programCounter++;
+            //UInt16 tmp = (UInt16)(rel_address & 0x80);
+            //skok może odbywać się do przodu albo do tyłu w pamięci, dlatego trzeba sprawdzić czy adres jest ze znakiem czy też nie
+            //sprawdzenie znaku jest zapewniane przez najwyższy bit pamięci(pierwszy od lewej)
+            //jeśli najwyższy bit jest ustawiony to wtedy cały najwyższy Bajt ustawiamy na 1111 1111 przez co ma znaczenie 
+            //przy późniejszym dodawaniu tej wartości do Program Countera
+            if((rel_address & 0x80) != 0)
+                rel_address |= 0xFF00;
             return false;
         }
     }
