@@ -11,7 +11,7 @@ namespace EmulatorMOS6502.CPU {
 
         // Trzyma miejsce w pamięci z którego obecnie odczytujemy
         UInt16 abs_address = 0x0000;
-        UInt16 rel_address = 0x00;
+        Byte rel_address = 0x00;
         Byte opcode = 0x00;
 
    
