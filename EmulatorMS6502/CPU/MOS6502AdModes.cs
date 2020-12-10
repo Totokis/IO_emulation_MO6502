@@ -13,6 +13,15 @@ namespace EmulatorMOS6502.CPU {
             return false;
         }
 
+        bool IMP() {
+            // Przerzuca fetched (który reprezentuje wykonywany 
+            // input w ALU - czyli w jednostce arytmetyczno-logicznej, 
+            // która wykonuje operacje arytmetyczne) do akumulatora czyli 
+            // rejestru które przechowywuje wyniki operacji ALU
+            fetched = a;
+            return false;
+        }
+
         // Indirect
         // Tryb adresowania działa jak wskaźnik czyli
         // to co odczytujemy z adresu wysłanego z intrukcją, to
@@ -76,10 +85,21 @@ namespace EmulatorMOS6502.CPU {
             absAddress = (Byte)(ReadFromBus(programCounter) + y);
             // Wejście na strone 0
             absAddress &= 0x00FF;
+            // Inkrementacja Program Countera
+            programCounter++;
+            return false;
+        }
+
+        bool ZPX() {
+            // Wczytanie adresu podanego z instrukcją i dodanie wartości rejestru X
+            absAddress = (Byte)(ReadFromBus(programCounter) + x);
+            // Wejście na strone 0
+            absAddress &= 0x00FF;
             // Inkrementacja PC
             programCounter++;
             return false;
         }
+
 
         bool ZP0()
         {
@@ -92,6 +112,22 @@ namespace EmulatorMOS6502.CPU {
             absAddress &= 0x00FF;
             programCounter++;
             return false;
+        }
+
+        bool ABY() {
+            //konstruujemy adres z dwóch bajtów, dlatego najpierw pobieramy low byte a potem high byte
+            UInt16 lowByte = (Byte)ReadFromBus(programCounter);
+            programCounter++;
+            UInt16 highByte = (Byte)ReadFromBus(programCounter);
+            programCounter++;
+            //łączymy dwa bajty w jeden 16bitowy adres( 16 bitowa też jest magistrala dlatego tak a nie inaczej)
+            absAddress = (UInt16)((highByte << 8) | lowByte);
+            absAddress += y;
+
+            if((absAddress & 0xFF00) != (highByte << 8))
+                return true;
+            else
+                return false;
         }
 
         bool ABX()
@@ -159,5 +195,7 @@ namespace EmulatorMOS6502.CPU {
 
             return false;
         }
+
+
     }
 }

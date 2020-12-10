@@ -12,6 +12,7 @@ namespace EmulatorMOS6502.CPU {
         // Trzyma miejsce w pamięci z którego obecnie odczytujemy
         UInt16 absAddress = 0x0000;
         UInt16 relAddress = 0x00;
+        Byte fetched = 0x00;
         Byte opcode = 0x00;
 
        // 1. parita
@@ -42,7 +43,7 @@ namespace EmulatorMOS6502.CPU {
         #endregion
 
         #region Registers
-        Byte a = 0x00;
+        Byte a = 0x00; //Accumulator Register
         Byte x = 0x00;
         Byte y = 0x00;
         Byte stackPointer = 0x00;
