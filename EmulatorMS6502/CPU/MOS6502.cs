@@ -10,8 +10,8 @@ namespace EmulatorMOS6502.CPU {
         Byte cycles = 0; // Jak coś ten Byte na Inta dać
 
         // Trzyma miejsce w pamięci z którego obecnie odczytujemy
-        UInt16 abs_address = 0x0000;
-        UInt16 rel_address = 0x00;
+        UInt16 absAddress = 0x0000;
+        UInt16 relAddress = 0x00;
         Byte opcode = 0x00;
 
        // 1. parita

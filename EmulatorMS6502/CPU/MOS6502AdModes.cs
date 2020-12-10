@@ -40,7 +40,7 @@ namespace EmulatorMOS6502.CPU {
             // lokalizacja już z danymi do wyciągnięcia (zapisane w fromie low , high)
             // Zczytujemy High byte ( adres + 1 ) po czym przesuwając go o 8 w lewo tworzymy 1010 1011 0000 0000
             // i następnie dołączamy Low byte z pierwszego miejsca ( adres ) używając bitowego Or
-            abs_address = (UInt16)(ReadFromBus((UInt16)(tmpAddr + 1)) << 8 | ReadFromBus(tmpAddr));
+            absAddress = (UInt16)(ReadFromBus((UInt16)(tmpAddr + 1)) << 8 | ReadFromBus(tmpAddr));
 
             programCounter++;
             return false;
@@ -58,7 +58,7 @@ namespace EmulatorMOS6502.CPU {
             // więc składamy cały adres nakładając po dodaniu rejestru X maskę strony 0
             // pamiętając następny bajt to high, poprzedni to low
 
-            abs_address = (UInt16)((ReadFromBus((UInt16)((zpAddr + 1 + x) & 0x00FF)) << 8) |
+            absAddress = (UInt16)((ReadFromBus((UInt16)((zpAddr + 1 + x) & 0x00FF)) << 8) |
                 ReadFromBus((UInt16)((zpAddr + x) & 0x00FF)));
 
             programCounter++;
@@ -73,9 +73,9 @@ namespace EmulatorMOS6502.CPU {
         bool ZPY()
         { 
             // Wczytanie adresu podanego z instrukcją i dodanie wartości rejestru Y
-            abs_address = (Byte)(ReadFromBus(programCounter) + y);
+            absAddress = (Byte)(ReadFromBus(programCounter) + y);
             // Wejście na strone 0
-            abs_address &= 0x00FF;
+            absAddress &= 0x00FF;
             // Inkrementacja PC
             programCounter++;
             return false;
@@ -88,8 +88,8 @@ namespace EmulatorMOS6502.CPU {
             //poniższa implementacja najpierw odczytuje 8 bitowy adres do 16bitowego kontenera
             //następnie kontener zostaje przysłonięty za pomocą maski, zerując high byte adresu gdyż to adresowanie
             //odnosi się właśnie do adresu którego high byte wynosi zero, czyli nasze Zero Page
-            abs_address = (Byte) (ReadFromBus(programCounter));
-            abs_address &= 0x00FF;
+            absAddress = (Byte) (ReadFromBus(programCounter));
+            absAddress &= 0x00FF;
             programCounter++;
             return false;
         }
@@ -102,10 +102,10 @@ namespace EmulatorMOS6502.CPU {
             UInt16 highByte = (Byte) ReadFromBus(programCounter);
             programCounter++;
             //łączymy dwa bajty w jeden 16bitowy adres( 16 bitowa też jest magistrala dlatego tak a nie inaczej)
-            abs_address = (UInt16)((highByte << 8) | lowByte);
-            abs_address += x;
+            absAddress = (UInt16)((highByte << 8) | lowByte);
+            absAddress += x;
 
-            if((abs_address & 0xFF00)!=(highByte << 8))
+            if((absAddress & 0xFF00)!=(highByte << 8))
                 return true;
             else
                 return false;
@@ -113,15 +113,15 @@ namespace EmulatorMOS6502.CPU {
 
         bool REL(){
             //Adresowanie używane przy tzw branch instructions np JMP, pozwala na skok conajwyżej o 128 miejsc pamięci
-            rel_address = ReadFromBus(programCounter);
+            relAddress = ReadFromBus(programCounter);
             programCounter++;
-            //UInt16 tmp = (UInt16)(rel_address & 0x80);
+            //UInt16 tmp = (UInt16)(relAddress & 0x80);
             //skok może odbywać się do przodu albo do tyłu w pamięci, dlatego trzeba sprawdzić czy adres jest ze znakiem czy też nie
             //sprawdzenie znaku jest zapewniane przez najwyższy bit pamięci(pierwszy od lewej)
             //jeśli najwyższy bit jest ustawiony to wtedy cały najwyższy Bajt ustawiamy na 1111 1111 przez co ma znaczenie 
             //przy późniejszym dodawaniu tej wartości do Program Countera
-            if((rel_address & 0x80) != 0)
-                rel_address |= 0xFF00;
+            if((relAddress & 0x80) != 0)
+                relAddress |= 0xFF00;
             return false;
         }
 
@@ -132,10 +132,10 @@ namespace EmulatorMOS6502.CPU {
             UInt16 lo = ReadFromBus((UInt16)(t & 0x00FF));
             UInt16 hi = ReadFromBus((UInt16)((t + 1) & 0x00FF));
 
-            abs_address = (UInt16)((hi << 8) | lo);
-            abs_address += y;
+            absAddress = (UInt16)((hi << 8) | lo);
+            absAddress += y;
 
-            if ((abs_address & 0xFF00) != (hi << 8))
+            if ((absAddress & 0xFF00) != (hi << 8))
                 return true;
             else
                 return false;
@@ -143,7 +143,7 @@ namespace EmulatorMOS6502.CPU {
 
         bool IMM()
         {
-            abs_address = programCounter;
+            absAddress = programCounter;
             programCounter++;
             return false;
         }
@@ -155,9 +155,9 @@ namespace EmulatorMOS6502.CPU {
             UInt16 hi = ReadFromBus(programCounter);
             programCounter++;
 
-            abs_address = (UInt16)((hi << 8) | lo);
+            absAddress = (UInt16)((hi << 8) | lo);
 
-            return 0;
+            return false;
         }
     }
 }
