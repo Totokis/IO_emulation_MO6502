@@ -12,6 +12,7 @@ namespace EmulatorMOS6502.CPU {
         // Trzyma miejsce w pamięci z którego obecnie odczytujemy
         UInt16 absAddress = 0x0000;
         UInt16 relAddress = 0x00;
+        // Zmienna trzymające dane pobrane z odpowiedniego miejsca podczas wykonywania instrukcji
         Byte fetched = 0x00;
         Byte opcode = 0x00;
 
@@ -115,6 +116,8 @@ namespace EmulatorMOS6502.CPU {
 
         }
 
+        // Funkcja pomocnicza pobierająca potrzebne dane jeśli intrukcja takie wykorzystuje
+        // i zapisująca je do zmiennej fetched dla ogólnego dostępu
         Byte fetch() {
             return 4;
         }
