@@ -49,9 +49,6 @@ namespace EmulatorMOS6502.CPU {
 
 			return 1;
 		}
-
-		// Instruction: Branch if Carry Set
-		// Function:    if(C == 1) pc = address
 		UInt8 BCS()
 		{
 			//wykonanie instrukcji jedynie jeżeli jest carry bit
@@ -67,21 +64,86 @@ namespace EmulatorMOS6502.CPU {
 			}
 			return 0;
 		}
-
 		UInt8 BNE()
 		{
 			//wykonanie instrukcji jedynie jeżeli nie ma ustawionej flagi zero
 			if (getFlag('Z') == 0)
 			{
-				cycles++;
 				absAddress = (UInt16)(programCounter + relAddress);
 
+				//przekroczenie "page boundary" skutkuje zużyciem dodatkowego cyklu
 				if ((absAddress & 0xFF00) != (programCounter & 0xFF00))
+				{
 					cycles++;
+				}
 
 				programCounter = absAddress;
+
+				cycles++;
 			}
 			return 0;
 		}
+		UInt8 BVS()
+		{
+			//wykonanie instrukcji jeżeli branch nie jest overflow
+			if(getFlag('V') == 1)
+			{
+				absAddress = (UInt16)(programCounter + relAddress);
+
+				//przekroczenie "page boundary" skutkuje zużyciem dodatkowego cyklu
+				if ((absAddress & 0xFF00) != (programCounter & 0xFF00))
+				{
+					cycles++;
+				}
+
+				programCounter = absAddress;
+
+				cycles++;
+			}
+
+			return 0;
+		}
+		UInt8 CLV() //wyczyszczenie flagi overflow (ustawienie jej na false)
+		{
+			setFlag('V', false);
+			return 0;
+		}
+		UInt8 DEC() //odejmuje 1 od wartości
+		{
+			fetch();
+
+			UInt8 result = (UInt8)(fetched - 1);
+
+			//zapisanie wartosci do bus'a
+			WriteToBus(absAddress, result);
+
+			//ustawienie flagi zero jezeli wyszlo nam zero
+			setFlag('Z', result == 0x0000);
+
+			//jeżeli bit odpowiedzialny za wskazywanie wartości ujemnej jest 1 to wtedy ustawiamy flagę n
+			setFlag('N', Convert.ToBoolean(result & 0x0080));
+
+			return 0;
+		}
+		UInt8 INC()
+		{
+			fetch();
+
+			UInt8 result = (UInt8)(fetched + 1);
+
+			//zapisanie wartosci do bus'a
+			WriteToBus(absAddress, result);
+
+			//ustawiamy flage zero jezeli wyszlo zero
+			setFlag('Z', result == 0x0000);
+
+			//ustawiamy flage negative jezeli wyszla wartosc ujemna
+			setFlag('N', Convert.ToBoolean(result & 0x0080));
+
+			return 0;
+		}
+
+
+
 	}
 }
