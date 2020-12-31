@@ -13,6 +13,8 @@ namespace EmulatorTest
             Bus bus = new Bus();
             MOS6502 mos6502 = new MOS6502(bus);
             mos6502.startDemo();
+
+            Console.ReadKey();
         }
     }
 }
