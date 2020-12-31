@@ -101,6 +101,7 @@ namespace EmulatorMOS6502.CPU {
 
                 // cycle <= lookup[opcode].cycles;
             }
+
             cycles--;
         }
 
@@ -120,23 +121,15 @@ namespace EmulatorMOS6502.CPU {
 
         // Funkcja pomocnicza pobierająca potrzebne dane jeśli intrukcja takie wykorzystuje
         // i zapisująca je do zmiennej fetched dla ogólnego dostępu
-        void Fetch() {
+
+        void fetch() {
 
             if (lookup[opcode].AdressingMode != IMP)
             {
                 fetched = ReadFromBus(absAddress);
             }
         }
-            // uint8_t olc6502::fetch()
-            // {
-            //     if (!(lookup[opcode].addrmode == &olc6502::IMP))
-            //         fetched = read(addr_abs);
-            //     return fetched;
-            // }
-
         #endregion
-
-
 
 
         #region operation codes
