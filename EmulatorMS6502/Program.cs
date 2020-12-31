@@ -9,7 +9,7 @@ namespace EmulatorTest
         static void Main(string[] args)
         {
             Console.WriteLine("Start");
-            
+            //Komentarz
             Bus bus = new Bus();
             MOS6502 mos6502 = new MOS6502(bus);
             mos6502.startDemo();
