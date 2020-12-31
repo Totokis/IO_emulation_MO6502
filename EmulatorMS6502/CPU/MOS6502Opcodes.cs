@@ -83,7 +83,7 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 
-		UInt8 BNE()
+		bool BNE()
 		{
 			//wykonanie instrukcji jedynie jeżeli nie ma ustawionej flagi zero
 			if (getFlag('Z') == 0)
