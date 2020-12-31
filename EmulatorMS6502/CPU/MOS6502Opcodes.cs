@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 
 // OPCODE
-namespace EmulatorMOS6502.CPU {
+namespace EmulatorMOS6502.CPU 
+{
 
 	using UInt8 = Byte;
-	public partial class MOS6502 {
+	public partial class MOS6502 
+	{
         //Tu implementujemy wszystkie opcody
 
 
