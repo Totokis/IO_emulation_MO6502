@@ -163,22 +163,24 @@ namespace EmulatorMOS6502.CPU {
 
         bool IZY() //INDY
         {
-            UInt16 t = ReadFromBus(programCounter);
-            programCounter++;
-            UInt16 lo = ReadFromBus((UInt16)(t & 0x00FF));
-            UInt16 hi = ReadFromBus((UInt16)((t + 1) & 0x00FF));
 
-            absAddress = (UInt16)((hi << 8) | lo);
+            UInt16 value = ReadFromBus(programCounter);
+            programCounter++;
+            UInt16 right = ReadFromBus((UInt16)(value & 0x00FF));
+            UInt16 left = ReadFromBus((UInt16)((value + 1) & 0x00FF));
+            left = (UInt16)(left << 8);
+            absAddress = (UInt16)(left | right);
             absAddress += y;
 
-            if ((absAddress & 0xFF00) != (hi << 8))
+            if ((absAddress & 0xFF00) != left)
                 return true;
             else
                 return false;
         }
 
-        bool IMM()
+        bool IMM() //Immediate
         {
+            //zakładamy, że będziemy używać następnego byte'a, więc ustawiamy absAddress na programCounter
             absAddress = programCounter;
             programCounter++;
             return false;
@@ -186,12 +188,16 @@ namespace EmulatorMOS6502.CPU {
 
         bool ABS()
         {
-            UInt16 lo = ReadFromBus(programCounter);
-            programCounter++;
-            UInt16 hi = ReadFromBus(programCounter);
+            //wczytujemy caly adres
+            UInt16 right = ReadFromBus(programCounter);
             programCounter++;
 
-            absAddress = (UInt16)((hi << 8) | lo);
+            UInt16 left = ReadFromBus(programCounter);
+            left = (UInt16)(left << 8);
+            programCounter++;
+
+            //wykonanie działania i zapisanie go jako absolute address
+            absAddress = (UInt16)(left | right);
 
             return false;
         }
