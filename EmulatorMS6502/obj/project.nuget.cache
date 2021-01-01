@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "dhqDP749jHtB9A8GiV6BeqSHRYXD9CrE++86fjJJYVPyZR8eGPaoi/Zf4ZFIJdrHIvzgOr+XCCKKiHAOPWFh/Q==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\admin\\source\\repos\\project for IO\\IO_emulation_MO6502\\EmulatorMS6502\\EmulatorMS6502.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\admin\\.nuget\\packages\\microsoft.netcore.app.ref\\3.1.0\\microsoft.netcore.app.ref.3.1.0.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\3.1.0\\microsoft.windowsdesktop.app.ref.3.1.0.nupkg.sha512"
+  ],
+  "logs": []
+}
