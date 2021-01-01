@@ -128,6 +128,74 @@ namespace EmulatorMOS6502.CPU {
 			return true;
 		}
 
+		// Obniżanie wartości rejestru X
+		bool DEX()
+		{
+			// Obniżamy rejestr X
+			x--;
+			// Podnosimy odpowiednie flagi jeśli warunki spełnione
+			setFlag('N', Convert.ToBoolean(x & 0x80));
+			setFlag('Z', x == 0x00);
+
+			return false;
+		}
+
+		// Podnoszenie wartości rejestru X
+		bool INX()
+		{
+			// Podnosimy wartość i ustawiamy flagi jeśli warunki spełnione
+			x++;
+			setFlag('N', Convert.ToBoolean(x & 0x80));
+			setFlag('Z', x == 0x00);
+
+			return false;
+		}
+
+		// TO DO --------------
+		// Brak operacji
+		bool NOP()
+		{
+			return false;
+		}
+
+		// TO DO --------------
+		bool PLA()
+		{
+			return false;
+		}
+
+		// TO DO --------------
+		bool RTI()
+		{
+			return false;
+		}
+
+		// Przechowaj wartość rejestru Y pod danym adresem w pamięci
+		bool STY()
+		{
+			WriteToBus(absAddress, y);
+			return false;
+		}
+
+		// Przenieś wartość z rejestru X do akumulatora
+		bool TXA()
+		{
+			a = x;
+
+			// Podnieś odpowiednie flagi jeśli spełnione warunki
+			setFlag('N', Convert.ToBoolean(a & 0x80));
+			setFlag('Z', a == 0x00);
+
+			return false;
+		}
+
+		// Podnieś flage Decimal
+		bool SED()
+		{
+			setFlag('D', true);
+			return false;
+		}
+
 		bool ADC() //Dodawanie
 		{
 			fetch();
