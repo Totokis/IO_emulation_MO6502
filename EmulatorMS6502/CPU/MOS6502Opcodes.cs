@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EmulatorMS6502;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -14,7 +15,7 @@ namespace EmulatorMOS6502.CPU {
             return false;
         }
 
-		UInt8 ADC() //Dodawanie
+		bool ADC() //Dodawanie
 		{
 			fetch();
 			
@@ -47,9 +48,9 @@ namespace EmulatorMOS6502.CPU {
 			//zapisujemy wynik do akumulatora z uwzględnieniem zamiany liczby na UInt8 (był potrzebny UInt16 żeby było łatwiej)
 			a = (UInt8)(result & 0x00FF);
 
-			return 1;
+			return false; //czy te returny sa bez znaczenia?
 		}
-		UInt8 BCS()
+		bool BCS()
 		{
 			//wykonanie instrukcji jedynie jeżeli jest carry bit
 			if (getFlag('C') == 1)
@@ -62,9 +63,9 @@ namespace EmulatorMOS6502.CPU {
 
 				programCounter = absAddress;
 			}
-			return 0;
+			return false;
 		}
-		UInt8 BNE()
+		bool BNE()
 		{
 			//wykonanie instrukcji jedynie jeżeli nie ma ustawionej flagi zero
 			if (getFlag('Z') == 0)
@@ -81,9 +82,9 @@ namespace EmulatorMOS6502.CPU {
 
 				cycles++;
 			}
-			return 0;
+			return false;
 		}
-		UInt8 BVS()
+		bool BVS()
 		{
 			//wykonanie instrukcji jeżeli branch nie jest overflow
 			if(getFlag('V') == 1)
@@ -101,14 +102,14 @@ namespace EmulatorMOS6502.CPU {
 				cycles++;
 			}
 
-			return 0;
+			return false;
 		}
-		UInt8 CLV() //wyczyszczenie flagi overflow (ustawienie jej na false)
+		bool CLV() //wyczyszczenie flagi overflow (ustawienie jej na false)
 		{
 			setFlag('V', false);
-			return 0;
+			return false;
 		}
-		UInt8 DEC() //odejmuje 1 od wartości
+		bool DEC() //odejmuje 1 od wartości
 		{
 			fetch();
 
@@ -123,9 +124,9 @@ namespace EmulatorMOS6502.CPU {
 			//jeżeli bit odpowiedzialny za wskazywanie wartości ujemnej jest 1 to wtedy ustawiamy flagę n
 			setFlag('N', Convert.ToBoolean(result & 0x0080));
 
-			return 0;
+			return false;
 		}
-		UInt8 INC()
+		bool INC()
 		{
 			fetch();
 
@@ -140,10 +141,121 @@ namespace EmulatorMOS6502.CPU {
 			//ustawiamy flage negative jezeli wyszla wartosc ujemna
 			setFlag('N', Convert.ToBoolean(result & 0x0080));
 
-			return 0;
+			return false;
 		}
 
+		bool JSR()
+		{
+			//zapisuje programCounter do bus'a i wczytuje na niego absolute address
+			
+			programCounter--;
 
+			UInt16 left8bitsOfProgramCounter = (UInt16)(programCounter >> 8);
+			WriteToBus((UInt16)(0x0100 + stackPointer), (UInt8)(left8bitsOfProgramCounter & 0x00FF));
+			stackPointer -= 1;
 
+			WriteToBus((UInt16)(0x0100 + stackPointer + 1), (UInt8)(programCounter & 0x00FF));
+			stackPointer -= 1;
+
+			programCounter = absAddress;
+
+			return false;
+		}
+
+		bool LSR()
+		{
+			//opcode jest zalezny od rzeczy ktorych jeszcze nie ma wiec odloze implementacje na pozniej
+			throw new NotImplementedException(); 
+			fetch();
+
+			//ostatni bit wrzucamy jako carry bit
+			setFlag('C', Convert.ToBoolean(fetched & 0x0001));
+
+			//teraz mozemy przesunac cala wartosc o 1 bo ostatni bit byl uzyty wyzej
+			UInt8 fetchedOneRight = (UInt8)(fetched >> 1);
+
+			if ((fetchedOneRight & 0x00FF) == 0x0000)
+				setFlag('Z', true);
+			else
+				setFlag('Z', false);
+
+			if (Convert.ToBoolean(fetchedOneRight & 0x0080))
+				setFlag('N', true);
+			else
+				setFlag('N', false);
+		}
+
+		bool PHP()
+		{
+			//zapisujemy statusRegister
+			WriteToBus((UInt16)(0x0100 + stackPointer), (UInt8)(statusRegister | getFlag('B') | getFlag('U')));
+			stackPointer--;
+
+			//resetujemy obie flagi
+			setFlag('B', false);
+			setFlag('U', false);
+			
+			return false;
+		}
+
+		bool ROR()
+		{
+			fetch();
+
+			UInt16 temp = (UInt16)((getFlag('C') << 7) | (fetched >> 1));
+			if (Convert.ToBoolean(fetched & 0x01))
+				setFlag('C', true);
+			else
+				setFlag('C', false);
+
+			if (Convert.ToBoolean((temp & 0x00FF) == 0x00))
+				setFlag('Z', true);
+			else
+				setFlag('Z', false);
+
+			if (Convert.ToBoolean(temp & 0x0080))
+				setFlag('N', true);
+			else
+				setFlag('N', false);
+
+			throw new NotImplementedException(); //lookup and IMP required
+
+			return false;
+		}
+
+		bool SEC()
+		{
+			//ustawienie flagi carry bit na true
+
+			setFlag('C', true);
+			return false;
+		}
+
+		bool STX()
+		{
+			//zapisanie x na adresie abs
+
+			WriteToBus(absAddress, x);
+			return false;
+		}
+
+		bool TSX()
+		{
+			//zapisuje stackPointer pod x'ksem i ustawia flagi Z i N jezeli zajdzie taka potrzeba
+
+			x = stackPointer;
+
+			if (stackPointer == 0x00)
+				setFlag('Z', true);
+			else
+				setFlag('Z', false);
+
+			if (Convert.ToBoolean(stackPointer & 0x80))
+				setFlag('N', true);
+			else
+				setFlag('N', false);
+
+			return false;
+		}
 	}
 }
