@@ -1,16 +1,13 @@
-﻿using System;
+﻿using EmulatorMS6502;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 // OPCODE
-namespace EmulatorMOS6502.CPU 
-{
-
+namespace EmulatorMOS6502.CPU {
 	using UInt8 = Byte;
-	public partial class MOS6502 
-	{
+	public partial class MOS6502 {
         //Tu implementujemy wszystkie opcody
-
 
         //Totalnie przykłaowy opcode
         bool exOpc() {
@@ -18,51 +15,51 @@ namespace EmulatorMOS6502.CPU
             return false;
         }
 
-		// Wpisz daną wartość z podanej lokalizacji na akumulator
-	    bool LDA()
-        {
-            fetch();
-            a = fetched;
-			// Jeśli na jest 0
-            setFlag('Z',a==0x00);
-			// Jeśli 8 bit jest równy 'zapalony'
-			setFlag('N',(Byte)(a & 0x80) == 0x80);
-            return true;
-        }
-        
-        bool STA()
-        {
-            WriteToBus(absAddress,a);
-            return false;
-        }
+		// Wpisz daną wartość z podanej lokalizacji na akumulator	
+		bool LDA()
+		{
+			fetch();
+			a = fetched;
+			// Jeśli na jest 0	
+			setFlag('Z', a == 0x00);
+			// Jeśli 8 bit jest równy 'zapalony'	
+			setFlag('N', (Byte)(a & 0x80) == 0x80);
+			return true;
+		}
 
-        // Bitowe AND dla tego co pobrane z pamięci oraz Akumulatora
-        bool AND()
-        {
-            // Pobieramy dane do zmiennej fetched
-            fetch();
-            // Wykonujemy bitowe AND dla akumulatora
-            a &= fetched;
-            // Ustawiamy dwie flagi Z oraz N
-            // Jeśli wynikiem jest 0
-            setFlag('Z', a == 0x00);
-            // Jeśli 8 bit jest równy 'zapalony'
-            setFlag('N', Convert.ToBoolean(a & 0x80));
+		bool STA()
+		{
+			WriteToBus(absAddress, a);
+			return false;
+		}
 
-            // Instrukcja może zwrócić dodatkowy bit, jeśli granica strony jest przekroczona to dodajemy +1 cykl
-            return true;
-        }
+		// Bitowe AND dla tego co pobrane z pamięci oraz Akumulatora	
+		bool AND()
+		{
+			// Pobieramy dane do zmiennej fetched	
+			fetch();
+			// Wykonujemy bitowe AND dla akumulatora	
+			a &= fetched;
+			// Ustawiamy dwie flagi Z oraz N	
+			// Jeśli wynikiem jest 0	
+			setFlag('Z', a == 0x00);
+			// Jeśli 8 bit jest równy 'zapalony'	
+			setFlag('N', Convert.ToBoolean(a & 0x80));
 
-		// Instrukcja branch if equal, wykonanie innej instrukcji skacząc o wartość adresu względnego (relative)
-		// Jeśli flaga Z jest równa 1
+			// Instrukcja może zwrócić dodatkowy bit, jeśli granica strony jest przekroczona to dodajemy +1 cykl	
+			return true;
+		}
+
+		// Instrukcja branch if equal, wykonanie innej instrukcji skacząc o wartość adresu względnego (relative)	
+		// Jeśli flaga Z jest równa 1	
 		bool BEQ()
 		{
 			if (getFlag('Z') == 1)
 			{
-				// Podaj do wykonania lokalizacje po skoku z wzgędnego adresu
+				// Podaj do wykonania lokalizacje po skoku z wzgędnego adresu	
 				absAddress = (UInt16)(programCounter + relAddress);
-				// Jeśli na tej samej stronie to zwiększ cykle o 1
-				// Jeśli przekroczył strone to cykle +2
+				// Jeśli na tej samej stronie to zwiększ cykle o 1	
+				// Jeśli przekroczył strone to cykle +2	
 				if ((absAddress & 0xFF00) != (programCounter & 0xFF00))
 				{
 					cycles += 2;
@@ -72,22 +69,22 @@ namespace EmulatorMOS6502.CPU
 					cycles++;
 				}
 
-				// Nadaj do wykonania na program counter adres po skoku
+				// Nadaj do wykonania na program counter adres po skoku	
 				programCounter = absAddress;
 			}
 			return false;
 		}
 
-		// Instrukcja branch if plus, wykonanie innej instrukcji skacząc o wartość adresu względnego (relative)
-		// Jeśli flaga Z jest równa 1
+		// Instrukcja branch if plus, wykonanie innej instrukcji skacząc o wartość adresu względnego (relative)	
+		// Jeśli flaga Z jest równa 1	
 		bool BPL()
 		{
 			if (getFlag('N') == 0)
 			{
-				// Podaj do wykonania lokalizacje po skoku z wzgędnego adresu
+				// Podaj do wykonania lokalizacje po skoku z wzgędnego adresu	
 				absAddress = (UInt16)(programCounter + relAddress);
-				// Jeśli na tej samej stronie to zwiększ cykle o 1
-				// Jeśli przekroczył strone to cykle +2
+				// Jeśli na tej samej stronie to zwiększ cykle o 1	
+				// Jeśli przekroczył strone to cykle +2	
 				if ((absAddress & 0xFF00) != (programCounter & 0xFF00))
 				{
 					cycles += 2;
@@ -97,40 +94,39 @@ namespace EmulatorMOS6502.CPU
 					cycles++;
 				}
 
-				// Nadaj do wykonania na program counter adres po skoku
+				// Nadaj do wykonania na program counter adres po skoku	
 				programCounter = absAddress;
 			}
 			return false;
 		}
 
-		// Instrukcja czyszczenia carry bitu
+		// Instrukcja czyszczenia carry bitu	
 		bool CLC()
 		{
 			setFlag('C', false);
 			return false;
 		}
 
-		// Porównanie akumulatora z pamięcią
+		// Porównanie akumulatora z pamięcią	
 		bool CMP()
 		{
-			// Ładujemy dane
+			// Ładujemy dane	
 			fetch();
-			// Wykonujemy A(cumulator) - M(emory)
+			// Wykonujemy A(cumulator) - M(emory)	
 			UInt16 score = (UInt16)(a - fetched);
 
-			// Odpowiednio podnosimy flagi:
-			// Jeśli wynikiem jest 0 = są takie same
+			// Odpowiednio podnosimy flagi:	
+			// Jeśli wynikiem jest 0 = są takie same	
 			setFlag('Z', !Convert.ToBoolean(score & 0x00FF));
 
-			// Jeśli wynik ujemny = M > A
+			// Jeśli wynik ujemny = M > A	
 			setFlag('N', Convert.ToBoolean(score & 0x80));
 
-			// Jeśli A > M
+			// Jeśli A > M	
 			setFlag('C', a >= fetched);
 
 			return true;
 		}
-
 
 		bool ADC() //Dodawanie
 		{
@@ -165,9 +161,8 @@ namespace EmulatorMOS6502.CPU
 			//zapisujemy wynik do akumulatora z uwzględnieniem zamiany liczby na UInt8 (był potrzebny UInt16 żeby było łatwiej)
 			a = (UInt8)(result & 0x00FF);
 
-			return true;
+			return false; //czy te returny sa bez znaczenia?
 		}
-
 		bool BCS()
 		{
 			//wykonanie instrukcji jedynie jeżeli jest carry bit
@@ -183,7 +178,6 @@ namespace EmulatorMOS6502.CPU
 			}
 			return false;
 		}
-
 		bool BNE()
 		{
 			//wykonanie instrukcji jedynie jeżeli nie ma ustawionej flagi zero
@@ -203,7 +197,6 @@ namespace EmulatorMOS6502.CPU
 			}
 			return false;
 		}
-
 		bool BVS()
 		{
 			//wykonanie instrukcji jeżeli branch nie jest overflow
@@ -224,13 +217,11 @@ namespace EmulatorMOS6502.CPU
 
 			return false;
 		}
-
 		bool CLV() //wyczyszczenie flagi overflow (ustawienie jej na false)
 		{
 			setFlag('V', false);
 			return false;
 		}
-
 		bool DEC() //odejmuje 1 od wartości
 		{
 			fetch();
@@ -248,7 +239,6 @@ namespace EmulatorMOS6502.CPU
 
 			return false;
 		}
-
 		bool INC()
 		{
 			fetch();
@@ -268,5 +258,118 @@ namespace EmulatorMOS6502.CPU
 		}
 
 
+		bool JSR()
+		{
+			//zapisuje programCounter do bus'a i wczytuje na niego absolute address
+			
+			programCounter--;
+
+			UInt16 left8bitsOfProgramCounter = (UInt16)(programCounter >> 8);
+			WriteToBus((UInt16)(0x0100 + stackPointer), (UInt8)(left8bitsOfProgramCounter & 0x00FF));
+			stackPointer -= 1;
+
+			WriteToBus((UInt16)(0x0100 + stackPointer + 1), (UInt8)(programCounter & 0x00FF));
+			stackPointer -= 1;
+
+			programCounter = absAddress;
+
+			return false;
+		}
+
+		bool LSR()
+		{
+			//opcode jest zalezny od rzeczy ktorych jeszcze nie ma wiec odloze implementacje na pozniej
+			throw new NotImplementedException(); 
+			fetch();
+
+			//ostatni bit wrzucamy jako carry bit
+			setFlag('C', Convert.ToBoolean(fetched & 0x0001));
+
+			//teraz mozemy przesunac cala wartosc o 1 bo ostatni bit byl uzyty wyzej
+			UInt8 fetchedOneRight = (UInt8)(fetched >> 1);
+
+			if ((fetchedOneRight & 0x00FF) == 0x0000)
+				setFlag('Z', true);
+			else
+				setFlag('Z', false);
+
+			if (Convert.ToBoolean(fetchedOneRight & 0x0080))
+				setFlag('N', true);
+			else
+				setFlag('N', false);
+		}
+
+		bool PHP()
+		{
+			//zapisujemy statusRegister
+			WriteToBus((UInt16)(0x0100 + stackPointer), (UInt8)(statusRegister | getFlag('B') | getFlag('U')));
+			stackPointer--;
+
+			//resetujemy obie flagi
+			setFlag('B', false);
+			setFlag('U', false);
+			
+			return false;
+		}
+
+		bool ROR()
+		{
+			fetch();
+
+			UInt16 temp = (UInt16)((getFlag('C') << 7) | (fetched >> 1));
+			if (Convert.ToBoolean(fetched & 0x01))
+				setFlag('C', true);
+			else
+				setFlag('C', false);
+
+			if (Convert.ToBoolean((temp & 0x00FF) == 0x00))
+				setFlag('Z', true);
+			else
+				setFlag('Z', false);
+
+			if (Convert.ToBoolean(temp & 0x0080))
+				setFlag('N', true);
+			else
+				setFlag('N', false);
+
+			throw new NotImplementedException(); //lookup and IMP required
+
+			return false;
+		}
+
+		bool SEC()
+		{
+			//ustawienie flagi carry bit na true
+
+			setFlag('C', true);
+			return false;
+		}
+
+		bool STX()
+		{
+			//zapisanie x na adresie abs
+
+			WriteToBus(absAddress, x);
+			return false;
+		}
+
+		bool TSX()
+		{
+			//zapisuje stackPointer pod x'ksem i ustawia flagi Z i N jezeli zajdzie taka potrzeba
+
+			x = stackPointer;
+
+			if (stackPointer == 0x00)
+				setFlag('Z', true);
+			else
+				setFlag('Z', false);
+
+			if (Convert.ToBoolean(stackPointer & 0x80))
+				setFlag('N', true);
+			else
+				setFlag('N', false);
+
+			return false;
+		}
 	}
 }
