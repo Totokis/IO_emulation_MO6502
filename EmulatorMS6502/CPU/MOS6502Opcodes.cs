@@ -4,133 +4,16 @@ using System.Collections.Generic;
 using System.Text;
 
 // OPCODE
-namespace EmulatorMOS6502.CPU 
-{
-
+namespace EmulatorMOS6502.CPU {
 	using UInt8 = Byte;
-	public partial class MOS6502 
-	{
+	public partial class MOS6502 {
         //Tu implementujemy wszystkie opcody
-
 
         //Totalnie przykłaowy opcode
         bool exOpc() {
             fetch();
             return false;
         }
-
-		// Wpisz daną wartość z podanej lokalizacji na akumulator
-	    bool LDA()
-        {
-            fetch();
-            a = fetched;
-			// Jeśli na jest 0
-            setFlag('Z',a==0x00);
-			// Jeśli 8 bit jest równy 'zapalony'
-			setFlag('N',(Byte)(a & 0x80) == 0x80);
-            return true;
-        }
-        
-        bool STA()
-        {
-            WriteToBus(absAddress,a);
-            return false;
-        }
-
-        // Bitowe AND dla tego co pobrane z pamięci oraz Akumulatora
-        bool AND()
-        {
-            // Pobieramy dane do zmiennej fetched
-            fetch();
-            // Wykonujemy bitowe AND dla akumulatora
-            a &= fetched;
-            // Ustawiamy dwie flagi Z oraz N
-            // Jeśli wynikiem jest 0
-            setFlag('Z', a == 0x00);
-            // Jeśli 8 bit jest równy 'zapalony'
-            setFlag('N', Convert.ToBoolean(a & 0x80));
-
-            // Instrukcja może zwrócić dodatkowy bit, jeśli granica strony jest przekroczona to dodajemy +1 cykl
-            return true;
-        }
-
-		// Instrukcja branch if equal, wykonanie innej instrukcji skacząc o wartość adresu względnego (relative)
-		// Jeśli flaga Z jest równa 1
-		bool BEQ()
-		{
-			if (getFlag('Z') == 1)
-			{
-				// Podaj do wykonania lokalizacje po skoku z wzgędnego adresu
-				absAddress = (UInt16)(programCounter + relAddress);
-				// Jeśli na tej samej stronie to zwiększ cykle o 1
-				// Jeśli przekroczył strone to cykle +2
-				if ((absAddress & 0xFF00) != (programCounter & 0xFF00))
-				{
-					cycles += 2;
-				}
-				else
-				{
-					cycles++;
-				}
-
-				// Nadaj do wykonania na program counter adres po skoku
-				programCounter = absAddress;
-			}
-			return false;
-		}
-
-		// Instrukcja branch if plus, wykonanie innej instrukcji skacząc o wartość adresu względnego (relative)
-		// Jeśli flaga Z jest równa 1
-		bool BPL()
-		{
-			if (getFlag('N') == 0)
-			{
-				// Podaj do wykonania lokalizacje po skoku z wzgędnego adresu
-				absAddress = (UInt16)(programCounter + relAddress);
-				// Jeśli na tej samej stronie to zwiększ cykle o 1
-				// Jeśli przekroczył strone to cykle +2
-				if ((absAddress & 0xFF00) != (programCounter & 0xFF00))
-				{
-					cycles += 2;
-				}
-				else
-				{
-					cycles++;
-				}
-
-				// Nadaj do wykonania na program counter adres po skoku
-				programCounter = absAddress;
-			}
-			return false;
-		}
-
-		// Instrukcja czyszczenia carry bitu
-		bool CLC()
-		{
-			setFlag('C', false);
-			return false;
-		}
-
-		// Porównanie akumulatora z pamięcią
-		bool CMP()
-		{
-			// Ładujemy dane
-			fetch();
-			// Wykonujemy A(cumulator) - M(emory)
-			UInt16 score = (UInt16)(a - fetched);
-
-			// Odpowiednio podnosimy flagi:
-			// Jeśli wynikiem jest 0 = są takie same
-			setFlag('Z', !Convert.ToBoolean(score & 0x00FF));
-
-			// Jeśli wynik ujemny = M > A
-			setFlag('N', Convert.ToBoolean(score & 0x80));
-
-			// Jeśli A > M
-			setFlag('C', a >= fetched);
-
-			return true;
-		}
 
 		bool ADC() //Dodawanie
 		{
@@ -167,7 +50,6 @@ namespace EmulatorMOS6502.CPU
 
 			return false; //czy te returny sa bez znaczenia?
 		}
-
 		bool BCS()
 		{
 			//wykonanie instrukcji jedynie jeżeli jest carry bit
@@ -183,7 +65,6 @@ namespace EmulatorMOS6502.CPU
 			}
 			return false;
 		}
-
 		bool BNE()
 		{
 			//wykonanie instrukcji jedynie jeżeli nie ma ustawionej flagi zero
@@ -203,7 +84,6 @@ namespace EmulatorMOS6502.CPU
 			}
 			return false;
 		}
-
 		bool BVS()
 		{
 			//wykonanie instrukcji jeżeli branch nie jest overflow
@@ -224,13 +104,11 @@ namespace EmulatorMOS6502.CPU
 
 			return false;
 		}
-
 		bool CLV() //wyczyszczenie flagi overflow (ustawienie jej na false)
 		{
 			setFlag('V', false);
 			return false;
 		}
-
 		bool DEC() //odejmuje 1 od wartości
 		{
 			fetch();
@@ -248,7 +126,6 @@ namespace EmulatorMOS6502.CPU
 
 			return false;
 		}
-
 		bool INC()
 		{
 			fetch();
