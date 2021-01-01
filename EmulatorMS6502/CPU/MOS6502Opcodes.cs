@@ -267,6 +267,7 @@ namespace EmulatorMOS6502.CPU
 			return false;
 		}
 
+
 		bool JSR()
 		{
 			//zapisuje programCounter do bus'a i wczytuje na niego absolute address
@@ -380,6 +381,5 @@ namespace EmulatorMOS6502.CPU
 
 			return false;
 		}
-
 	}
 }
