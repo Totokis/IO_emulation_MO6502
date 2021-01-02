@@ -151,22 +151,53 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 
-		// TO DO --------------
 		// Brak operacji
 		bool NOP()
 		{
 			return false;
 		}
 
-		// TO DO --------------
+		// Zebranie ze stosu i wczytanie z lokalizacji do akumulatora 
+		// Stos domyślnie zapisany jest na stronie 0x01
+		// i MOS 6502 używa stosu malejącego tzn. że stos rośnie w dół (stack pointer maleje przy push a podnosi się przy pull)
 		bool PLA()
 		{
+			// Ściągamy ze stosu przesuwając wskaźnik
+			stackPointer++;
+			// Wpisujemy na akumulator to co znajdowało się pod adresem z wskaźnika (ze strony 1)
+			a = ReadFromBus((UInt16)(0x0100 + stackPointer));
+
+			// Podnosimy odpowiednie flagi jeśli warunki spełnione
+			setFlag('N', Convert.ToBoolean(a & 0x80));
+			setFlag('Z', a == 0x00);
+
 			return false;
 		}
 
-		// TO DO --------------
+		// Powrócenie z przerwań
+		// Instrukcja przywraca stan flag które były ustawione na status register (N, Z, C, I, D, V)
+		// oraz przywraca program counter
 		bool RTI()
 		{
+			// Ściągamy ze stosu i przywracamy flagi
+			stackPointer++;
+			statusRegister = ReadFromBus((UInt16)(0x0100 + stackPointer));
+
+			// Pozostałe flagi takie jak Break oraz Unused nie powinny być ustawione więc je wyłączamy
+			// Chcemy zgasić B (1<<4) i U (1<<5) więc:
+			// 'B'     00010000
+			// 'U'     00100000
+			//	48     00110000
+			//  207    11001111
+			statusRegister &= 207;
+
+			// Ściągamy ze stosu kolejno składając 16 bitowy program counter w całość
+			stackPointer++;
+			UInt16 tmp = (UInt16)(ReadFromBus((UInt16)(0x0100 + stackPointer)));
+
+			stackPointer++;
+			programCounter = (UInt16)(((UInt16)(ReadFromBus((UInt16)(0x0100 + stackPointer))) << 8) | tmp);
+
 			return false;
 		}
 
