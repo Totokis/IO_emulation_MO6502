@@ -470,5 +470,90 @@ namespace EmulatorMOS6502.CPU {
 
 			return false;
 		}
+
+		/// <summary>
+		/// Branch if Carry Clear - Jeżeli flaga C jest ustawiona na  0 to wtedy ustawiamy PC na odpowiedni adres
+		/// </summary>
+		bool BCC() {
+			if (getFlag('C') == 0) {
+				cycles++;
+				absAddress = (UInt16)(programCounter + relAddress);
+
+				if((absAddress & 0xFF00) != (programCounter & 0xFF00))
+					cycles++;
+
+				programCounter = absAddress;
+            }
+			return false;
+        }
+
+		/// <summary>
+		/// Branch if negative - jeżeli flaga N jest ustawiona na 1 to ustawiamy PC na odpowiedni adres
+		/// </summary>
+		bool BMI() {
+			if(getFlag('N') == 1) {
+				cycles++;
+				absAddress = (UInt16)(programCounter + relAddress);
+
+				if((absAddress & 0xFF00) != (programCounter & 0xFF00))
+					cycles++;
+
+				programCounter = absAddress;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Branch if Overflow Clear - jeżeli flaga V jest ustawiona na 0 to ustawiamy PC na odpowiedni adres
+		/// </summary>
+		bool BVC() {
+			if(getFlag('V') == 0) {
+				cycles++;
+				absAddress = (UInt16)(programCounter + relAddress);
+
+				if((absAddress & 0xFF00) != (programCounter & 0xFF00))
+					cycles++;
+
+				programCounter = absAddress;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Clear Interrupt Flag (Disable Interrupts) - Ustawia flage I na 0
+		/// </summary>
+		bool CLI() {
+			setFlag('I', false);
+			return false;
+        }
+
+		/// <summary>
+		/// Compare Y Register - Zmienia flagi N, C, Z
+		/// </summary>
+		bool CPY() {
+			fetch();
+			var tmp = (UInt16)y - (UInt16)fetched;
+			setFlag('C', y >= fetched);
+			setFlag('Z', (tmp & 0x00FF) == 0x0000);
+			//nie jestem w 100 % pewien czy to jest ok:
+			setFlag('N', (tmp & 0x0080) == 0x0000);
+
+			return false;
+        }
+
+		/// <summary>
+		/// Compare X Register - Zmienia flagi N, C, Z
+		/// </summary>
+		bool CPX() {
+			fetch();
+			var tmp = (UInt16)x - (UInt16)fetched;
+			setFlag('C', y >= fetched);
+			setFlag('Z', (tmp & 0x00FF) == 0x0000);
+			//nie jestem w 100% pewien czy to jest ok: 
+			setFlag('N', (tmp & 0x0080) == 0x0000);
+
+			return false;
+		}
+
 	}
 }
