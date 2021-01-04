@@ -9,13 +9,9 @@ namespace EmulatorMOS6502.CPU {
 	public partial class MOS6502 {
         //Tu implementujemy wszystkie opcody
 
-        //Totalnie przykłaowy opcode
-        bool exOpc() {
-            fetch();
-            return false;
-        }
-
-		// Wpisz daną wartość z podanej lokalizacji na akumulator	
+		/// <summary>
+		/// Wpisz daną wartość z podanej lokalizacji na akumulator	
+		/// </summary>
 		bool LDA()
 		{
 			fetch();
@@ -27,7 +23,9 @@ namespace EmulatorMOS6502.CPU {
 			return true;
 		}
 
-		// Bitowe AND dla tego co pobrane z pamięci oraz Akumulatora	
+		/// <summary>
+		/// Bitowe AND dla tego co pobrane z pamięci oraz Akumulatora	
+		/// </summary>
 		bool AND()
 		{
 			// Pobieramy dane do zmiennej fetched	
@@ -44,8 +42,10 @@ namespace EmulatorMOS6502.CPU {
 			return true;
 		}
 
-		// Instrukcja branch if equal, wykonanie innej instrukcji skacząc o wartość adresu względnego (relative)	
-		// Jeśli flaga Z jest równa 1	
+		/// <summary>
+		/// Instrukcja branch if equal, wykonanie innej instrukcji skacząc o wartość adresu względnego (relative)	
+		/// Jeśli flaga Z jest równa 1
+		/// </summary>
 		bool BEQ()
 		{
 			if (getFlag('Z') == 1)
@@ -69,8 +69,10 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 
-		// Instrukcja branch if plus, wykonanie innej instrukcji skacząc o wartość adresu względnego (relative)	
-		// Jeśli flaga Z jest równa 1	
+		/// <summary>
+		/// Instrukcja branch if plus, wykonanie innej instrukcji skacząc o wartość adresu względnego (relative)	
+		/// Jeśli flaga Z jest równa 1
+		/// </summary>
 		bool BPL()
 		{
 			if (getFlag('N') == 0)
@@ -94,14 +96,18 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 
-		// Instrukcja czyszczenia carry bitu	
+		/// <summary>
+		/// Instrukcja czyszczenia carry bitu
+		/// </summary>
 		bool CLC()
 		{
 			setFlag('C', false);
 			return false;
 		}
 
-		// Porównanie akumulatora z pamięcią	
+		/// <summary>
+		/// Porównanie akumulatora z pamięcią
+		/// </summary>
 		bool CMP()
 		{
 			// Ładujemy dane	
@@ -122,7 +128,9 @@ namespace EmulatorMOS6502.CPU {
 			return true;
 		}
 
-		// Obniżanie wartości rejestru X
+		/// <summary>
+		/// Obniżanie wartości rejestru X
+		/// </summary>
 		bool DEX()
 		{
 			// Obniżamy rejestr X
@@ -133,8 +141,9 @@ namespace EmulatorMOS6502.CPU {
 
 			return false;
 		}
-
-		// Podnoszenie wartości rejestru X
+		/// <summary>
+		/// Podnoszenie wartości rejestru X
+		/// </summary>
 		bool INX()
 		{
 			// Podnosimy wartość i ustawiamy flagi jeśli warunki spełnione
@@ -145,15 +154,20 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 
-		// Brak operacji
+		/// <summary>
+		/// Brak operacji
+		/// </summary>
+		/// <returns></returns>
 		bool NOP()
 		{
 			return false;
 		}
 
-		// Zebranie ze stosu i wczytanie z lokalizacji do akumulatora 
-		// Stos domyślnie zapisany jest na stronie 0x01
-		// i MOS 6502 używa stosu malejącego tzn. że stos rośnie w dół (stack pointer maleje przy push a podnosi się przy pull)
+		/// <summary>
+		/// Zebranie ze stosu i wczytanie z lokalizacji do akumulatora 
+		/// Stos domyślnie zapisany jest na stronie 0x01
+		/// i MOS 6502 używa stosu malejącego tzn. że stos rośnie w dół (stack pointer maleje przy push a podnosi się przy pull)
+		/// </summary>
 		bool PLA()
 		{
 			// Ściągamy ze stosu przesuwając wskaźnik
@@ -168,9 +182,11 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 
-		// Powrócenie z przerwań
-		// Instrukcja przywraca stan flag które były ustawione na status register (N, Z, C, I, D, V)
-		// oraz przywraca program counter
+		/// <summary>
+		///  Powrócenie z przerwań
+		/// Instrukcja przywraca stan flag które były ustawione na status register (N, Z, C, I, D, V)
+		/// oraz przywraca program counter
+		/// </summary>
 		bool RTI()
 		{
 			// Ściągamy ze stosu i przywracamy flagi
@@ -195,14 +211,18 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 
-		// Przechowaj wartość rejestru Y pod danym adresem w pamięci
+		/// <summary>
+		/// Przechowaj wartość rejestru Y pod danym adresem w pamięci
+		/// </summary>
 		bool STY()
 		{
 			WriteToBus(absAddress, y);
 			return false;
 		}
 
-		// Przenieś wartość z rejestru X do akumulatora
+		/// <summary>
+		/// Przenieś wartość z rejestru X do akumulatora
+		/// </summary>
 		bool TXA()
 		{
 			a = x;
@@ -214,13 +234,18 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 
-		// Podnieś flage Decimal
+		/// <summary>
+		/// Podnieś flage Decimal
+		/// </summary>
 		bool SED()
 		{
 			setFlag('D', true);
 			return false;
 		}
 
+		/// <summary>
+		/// Bitowa operacja dodawania
+		/// </summary>
 		bool ADC() //Dodawanie
 		{
 			fetch();
@@ -256,9 +281,12 @@ namespace EmulatorMOS6502.CPU {
 
 			return false; //czy te returny sa bez znaczenia?
 		}
+
+		/// <summary>
+		/// wykonanie instrukcji jedynie jeżeli jest carry bit
+		/// </summary>
 		bool BCS()
-		{
-			//wykonanie instrukcji jedynie jeżeli jest carry bit
+		{			
 			if (getFlag('C') == 1)
 			{
 				cycles++;
@@ -271,9 +299,12 @@ namespace EmulatorMOS6502.CPU {
 			}
 			return false;
 		}
+
+		/// <summary>
+		/// wykonanie instrukcji jedynie jeżeli nie ma ustawionej flagi zero
+		/// </summary>
 		bool BNE()
 		{
-			//wykonanie instrukcji jedynie jeżeli nie ma ustawionej flagi zero
 			if (getFlag('Z') == 0)
 			{
 				absAddress = (UInt16)(programCounter + relAddress);
@@ -290,9 +321,12 @@ namespace EmulatorMOS6502.CPU {
 			}
 			return false;
 		}
+
+		/// <summary>
+		/// Wykonanie instrukcji jeżeli branch nie jest overflow
+		/// </summary>
 		bool BVS()
 		{
-			//wykonanie instrukcji jeżeli branch nie jest overflow
 			if(getFlag('V') == 1)
 			{
 				absAddress = (UInt16)(programCounter + relAddress);
@@ -310,12 +344,20 @@ namespace EmulatorMOS6502.CPU {
 
 			return false;
 		}
-		bool CLV() //wyczyszczenie flagi overflow (ustawienie jej na false)
+
+		/// <summary>
+		/// wyczyszczenie flagi overflow (ustawienie jej na false)
+		/// </summary>
+		bool CLV()
 		{
 			setFlag('V', false);
 			return false;
 		}
-		bool DEC() //odejmuje 1 od wartości
+
+		/// <summary>
+		/// odejmuje 1 od wartości
+		/// </summary>
+		bool DEC()
 		{
 			fetch();
 
@@ -350,7 +392,9 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 
-
+		/// <summary>
+		/// Zapisuje programCounter do bus'a i wczytuje na niego absolute address
+		/// </summary>
 		bool JSR()
 		{
 			//zapisuje programCounter do bus'a i wczytuje na niego absolute address
@@ -369,6 +413,9 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		bool LSR()
 		{
 			fetch();
@@ -436,6 +483,9 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 
+		/// <summary>
+		/// ustawienie flagi carry bit na true
+		/// </summary>
 		bool SEC()
 		{
 			//ustawienie flagi carry bit na true
@@ -444,6 +494,9 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 
+		/// <summary>
+		/// zapisanie x na adresie abs
+		/// </summary>
 		bool STX()
 		{
 			//zapisanie x na adresie abs
@@ -452,6 +505,9 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 
+		/// <summary>
+		/// Zapisuje stackPointer pod x'ksem i ustawia flagi Z i N jezeli zajdzie taka potrzeba
+		/// </summary>
 		bool TSX()
 		{
 			//zapisuje stackPointer pod x'ksem i ustawia flagi Z i N jezeli zajdzie taka potrzeba
