@@ -27,12 +27,6 @@ namespace EmulatorMOS6502.CPU {
 			return true;
 		}
 
-		bool STA()
-		{
-			WriteToBus(absAddress, a);
-			return false;
-		}
-
 		// Bitowe AND dla tego co pobrane z pamięci oraz Akumulatora	
 		bool AND()
 		{
@@ -535,7 +529,6 @@ namespace EmulatorMOS6502.CPU {
 			var tmp = (UInt16)y - (UInt16)fetched;
 			setFlag('C', y >= fetched);
 			setFlag('Z', (tmp & 0x00FF) == 0x0000);
-			//nie jestem w 100 % pewien czy to jest ok:
 			setFlag('N', (tmp & 0x0080) == 0x0000);
 
 			return false;
@@ -549,11 +542,104 @@ namespace EmulatorMOS6502.CPU {
 			var tmp = (UInt16)x - (UInt16)fetched;
 			setFlag('C', y >= fetched);
 			setFlag('Z', (tmp & 0x00FF) == 0x0000);
-			//nie jestem w 100% pewien czy to jest ok: 
 			setFlag('N', (tmp & 0x0080) == 0x0000);
 
 			return false;
 		}
 
+		/// <summary>
+		/// Bitowa operacja XOR - Zmienia flagi Negative i Zero jeśli to konieczne
+		/// </summary>
+		bool EOR() {
+			fetch();
+			a = (Byte)(a ^ fetched);
+			setFlag('Z', a == 0x00);
+			setFlag('N', (a & 0x80) == 0);
+			return true;
+		}
+
+		/// <summary>
+		/// Jump To Location - skacze do lokacji czyli ustawia Program Counter na absolute address
+		/// </summary>
+		bool JMP() {
+			programCounter = absAddress;
+			return false;
+        }
+
+		/// <summary>
+		/// Load The Y Register - wczytuje rejestr y z fetched potencjalnie zmienia flagi N i Z
+		/// </summary>
+		bool LDY() {
+			fetch();
+			y = fetched;
+			setFlag('Z', a == 0x00);
+			setFlag('N', (a & 0x80) == 0);
+			return true;
+        }
+
+		/// <summary>
+		/// Push acuumulator to Stack - po prostu używa funkcji WriteToBus
+		/// </summary>
+		bool PHA() {
+			WriteToBus((UInt16)(0x0100 + stackPointer), a);
+			stackPointer--;
+			return false;
+        }
+
+		/// <summary>
+		/// Cokolwiek ta instrukacja robi dokładnie, to ważne jest to że jest używana przy 
+		/// wyświetlaniu cyfr danej liczby. Przy każdej iteracji ustawia najniższy bajt akumulatora 
+		/// bit y które odpowiadają kolejnej cyfrze która jest do wyświetlenia (?)
+		/// https://stackoverflow.com/questions/19857339/why-is-rol-instruction-used
+		/// </summary>
+		bool ROL() {
+			fetch();
+			var tmp = (UInt16)(fetched << 1) | getFlag('C');
+			setFlag('C', Convert.ToBoolean(tmp & 0xFF00));
+			setFlag('Z', (tmp & 0xFF00) == 0x0000);
+			setFlag('N', Convert.ToBoolean(tmp & 0x0080));
+			if(lookup[opcode].AdressingMode == IMP)
+				a = (byte)(tmp & 0x00FF);
+			else
+				WriteToBus(absAddress, (byte)(tmp & 0x00FF));
+			return false;
+
+		}
+
+		/// <summary>
+		/// Zapisuje rejsestr x do absAddress
+		/// </summary>
+		bool STA() {
+			WriteToBus(absAddress, x);
+			return false;
+        }
+
+		/// <summary>
+		/// Transfer Accumulator to Y Register
+		/// </summary>
+
+		bool TAY() {
+			y = a;
+			setFlag('Z', y == 0x00);
+			setFlag('N', Convert.ToBoolean(y & 0x80));
+			return false;
+        }
+
+		/// <summary>
+		/// Transfer Y Register to Accumulator
+		/// </summary>
+		bool TYA() {
+			a = y;
+			setFlag('Z', y == 0x00);
+			setFlag('N', Convert.ToBoolean(y & 0x80));
+			return false;
+		}
+		
+		/// <summary>
+		/// Funkcja obejmująca niewłaściwe opcody
+		/// </summary>
+		bool XXX() {
+			return false;
+        }
 	}
 }
