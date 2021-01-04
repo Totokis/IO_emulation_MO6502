@@ -371,10 +371,7 @@ namespace EmulatorMOS6502.CPU {
 
 		bool LSR()
 		{
-			//opcode jest zalezny od rzeczy ktorych jeszcze nie ma wiec odloze implementacje na pozniej
-			throw new NotImplementedException(); 
 			fetch();
-
 			//ostatni bit wrzucamy jako carry bit
 			setFlag('C', Convert.ToBoolean(fetched & 0x0001));
 
@@ -390,6 +387,13 @@ namespace EmulatorMOS6502.CPU {
 				setFlag('N', true);
 			else
 				setFlag('N', false);
+
+			if(lookup[opcode].AdressingMode == IMP)
+				a = (byte)(fetchedOneRight & 0x00FF);
+			else
+				WriteToBus(absAddress, (byte)(fetchedOneRight & 0x00FF));
+
+			return false;
 		}
 
 		bool PHP()
@@ -424,9 +428,11 @@ namespace EmulatorMOS6502.CPU {
 				setFlag('N', true);
 			else
 				setFlag('N', false);
-
-			throw new NotImplementedException(); //lookup and IMP required
-
+			
+			if(lookup[opcode].AdressingMode == IMP)
+				a = (byte)(temp & 0x00FF);
+			else
+				WriteToBus(absAddress, (byte)(temp & 0x00FF));
 			return false;
 		}
 
