@@ -286,7 +286,7 @@ namespace EmulatorMOS6502.CPU {
 			//zapisujemy wynik do akumulatora z uwzględnieniem zamiany liczby na UInt8 (był potrzebny UInt16 żeby było łatwiej)
 			a = (UInt8) (result & 0x00FF);
 
-			return false; //czy te returny sa bez znaczenia?//-Nie, mają znaczenie -- PJ
+			return true; //czy te returny sa bez znaczenia?//-Nie, mają znaczenie -- PJ
 		}
 
 		/// <summary>
@@ -725,6 +725,45 @@ namespace EmulatorMOS6502.CPU {
 			setFlag('Z', y == 0x00);
 			setFlag('N', Convert.ToBoolean(y & 0x80));
 			return false;
+		}
+
+		bool SBC() 
+		{
+			fetch();
+			// Po prostu używamy XORa i zamieniamy liczbe dodatnią na ujemną i wykonujemy po prostu dodawanie
+			UInt16 negativeValue = Convert.ToUInt16((UInt16)fetched ^ 0x00FF);
+
+			// wynik powinien być w UInt8 ale ustawiamy na UInt16 żeby było prościej zaznaczyć flagi (przy dodawaniu można np. wyjść poza zakres)
+			UInt16 result = (UInt16)((UInt16)a + (UInt16)negativeValue + (UInt16)getFlag('C'));
+
+			// trzeba ustawić carry bit jeżeli wynik jest większy niż 255 (bo wynik i tak musi być podany w UInt8 a tutaj mamy UInt16)
+			if(result > 255)
+				setFlag('C', true);
+			else
+				setFlag('C', false);
+
+			// jezeli wynik jest rowny 0 to ustawiamy flagę zero na true
+			bool parameterZ = ((result & 0x00FF) == 0);
+			setFlag('Z', parameterZ);
+
+			// poniższe działanie sprawdza czy nie nastąpił overflow i powinno zwrócić wartość true w dwóch przypadkach: 
+			// dodatnia+dodatnia==ujemna
+			// ujemna+ujemna==dodatnia
+			bool parameterV =
+				Convert.ToBoolean((UInt16)((~((UInt16)a ^ (UInt16)negativeValue) & ((UInt16)a ^ (UInt16)result)) &
+											(UInt16)0x0080));
+			setFlag('V', parameterV);
+
+			// pierwszy bit oznacza liczbę ujemną, więc jeżeli jest pierwszy bit to ustawiamy negative na true
+			if(Convert.ToBoolean(result & 0x80))
+				setFlag('N', true);
+			else
+				setFlag('N', false);
+
+			// zapisujemy wynik do akumulatora z uwzględnieniem zamiany liczby na UInt8 (był potrzebny UInt16 żeby było łatwiej)
+			a = (UInt8)(result & 0x00FF);
+
+			return true;
 		}
 
 		/// <summary>
