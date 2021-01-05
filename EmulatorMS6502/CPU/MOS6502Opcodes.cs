@@ -774,6 +774,15 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 		
+		bool RTS() {
+			stackPointer++;
+			programCounter = (UInt16)ReadFromBus((UInt16)(0x0100 + stackPointer));
+			stackPointer++;
+			programCounter |= Convert.ToUInt16((UInt16)ReadFromBus((UInt16)(0x0100 + stackPointer)) << 8);
+			programCounter++;
+			return false;
+        }
+
 		bool ASL()
 		{
 			fetch();
