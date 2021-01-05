@@ -16,7 +16,7 @@ namespace EmulatorMOS6502.CPU {
 		/// </summary>
 		bool LDA()
 		{
-			fetch();
+			Fetch();
 			a = fetched;
 			// Jeśli na jest 0	
 			setFlag('Z', a == 0x00);
@@ -31,7 +31,7 @@ namespace EmulatorMOS6502.CPU {
 		bool AND()
 		{
 			// Pobieramy dane do zmiennej fetched	
-			fetch();
+			Fetch();
 			// Wykonujemy bitowe AND dla akumulatora	
 			a &= fetched;
 			// Ustawiamy dwie flagi Z oraz N	
@@ -115,13 +115,13 @@ namespace EmulatorMOS6502.CPU {
 		bool CMP()
 		{
 			// Ładujemy dane	
-			fetch();
+			Fetch();
 			// Wykonujemy A(cumulator) - M(emory)	
-			UInt16 score = (UInt16) (a - fetched);
+			Byte score = (Byte) (a - fetched); //1111 1111 - 0000 0000 = 0000 0000 1111 1111 
 
 			// Odpowiednio podnosimy flagi:	
 			// Jeśli wynikiem jest 0 = są takie same	
-			setFlag('Z', !Convert.ToBoolean(score & 0x00FF));
+			setFlag('Z', !Convert.ToBoolean(score));
 
 			// Jeśli wynik ujemny = M > A	
 			setFlag('N', Convert.ToBoolean(score & 0x80));
@@ -253,7 +253,7 @@ namespace EmulatorMOS6502.CPU {
 		/// </summary>
 		bool ADC() //Dodawanie
 		{
-			fetch();
+			Fetch();
 
 			//wynik powinien być w UInt8 ale ustawiamy na UInt16 żeby było prościej zaznaczyć flagi (przy dodawaniu można np. wyjść poza zakres)
 			UInt16 result = (UInt16) ((UInt16) a + (UInt16) fetched + (UInt16) getFlag('C'));
@@ -368,7 +368,7 @@ namespace EmulatorMOS6502.CPU {
 		/// </summary>
 		bool DEC()
 		{
-			fetch();
+			Fetch();
 
 			UInt8 result = (UInt8) (fetched - 1);
 
@@ -386,7 +386,7 @@ namespace EmulatorMOS6502.CPU {
 
 		bool INC()
 		{
-			fetch();
+			Fetch();
 
 			UInt8 result = (UInt8) (fetched + 1);
 
@@ -428,7 +428,7 @@ namespace EmulatorMOS6502.CPU {
 		/// </summary>
 		bool LSR()
 		{
-			fetch();
+			Fetch();
 			//ostatni bit wrzucamy jako carry bit
 			setFlag('C', Convert.ToBoolean(fetched & 0x0001));
 
@@ -468,7 +468,7 @@ namespace EmulatorMOS6502.CPU {
 
 		bool ROR()
 		{
-			fetch();
+			Fetch();
 
 			UInt16 temp = (UInt16) ((getFlag('C') << 7) | (fetched >> 1));
 			if (Convert.ToBoolean(fetched & 0x01))
@@ -608,7 +608,7 @@ namespace EmulatorMOS6502.CPU {
 		/// </summary>
 		bool CPY()
 		{
-			fetch();
+			Fetch();
 			var tmp = (UInt16) y - (UInt16) fetched;
 			setFlag('C', y >= fetched);
 			setFlag('Z', (tmp & 0x00FF) == 0x0000);
@@ -622,7 +622,7 @@ namespace EmulatorMOS6502.CPU {
 		/// </summary>
 		bool CPX()
 		{
-			fetch();
+			Fetch();
 			var tmp = (UInt16) x - (UInt16) fetched;
 			setFlag('C', y >= fetched);
 			setFlag('Z', (tmp & 0x00FF) == 0x0000);
@@ -636,7 +636,7 @@ namespace EmulatorMOS6502.CPU {
 		/// </summary>
 		bool EOR()
 		{
-			fetch();
+			Fetch();
 			a = (Byte) (a ^ fetched);
 			setFlag('Z', a == 0x00);
 			setFlag('N', (a & 0x80) == 0);
@@ -657,7 +657,7 @@ namespace EmulatorMOS6502.CPU {
 		/// </summary>
 		bool LDY()
 		{
-			fetch();
+			Fetch();
 			y = fetched;
 			setFlag('Z', a == 0x00);
 			setFlag('N', (a & 0x80) == 0);
@@ -682,7 +682,7 @@ namespace EmulatorMOS6502.CPU {
 		/// </summary>
 		bool ROL()
 		{
-			fetch();
+			Fetch();
 			var tmp = (UInt16) (fetched << 1) | getFlag('C');
 			setFlag('C', Convert.ToBoolean(tmp & 0xFF00));
 			setFlag('Z', (tmp & 0xFF00) == 0x0000);
@@ -729,7 +729,7 @@ namespace EmulatorMOS6502.CPU {
 
 		bool SBC() 
 		{
-			fetch();
+			Fetch();
 			// Po prostu używamy XORa i zamieniamy liczbe dodatnią na ujemną i wykonujemy po prostu dodawanie
 			UInt16 negativeValue = Convert.ToUInt16((UInt16)fetched ^ 0x00FF);
 
@@ -785,7 +785,7 @@ namespace EmulatorMOS6502.CPU {
 
 		bool ASL()
 		{
-			fetch();
+			Fetch();
 			var tmp = (UInt16) fetched << 1;
 
 			setFlag('C', (tmp & 0xFF00) > 0);
@@ -800,7 +800,7 @@ namespace EmulatorMOS6502.CPU {
 
 		bool BIT()
 		{
-			fetch();
+			Fetch();
 			var tmp = a & fetched;
 			setFlag('Z',(tmp & 0x00FF)==0x00);
 			setFlag('N',(fetched & (1 << 7))==1);
@@ -850,7 +850,7 @@ namespace EmulatorMOS6502.CPU {
 
 		bool LDX()
 		{
-			fetch();
+			Fetch();
 			x = fetched;
 			setFlag('Z',x == 0x00);
 			setFlag('N',(x & 0x80)==1);
@@ -859,7 +859,7 @@ namespace EmulatorMOS6502.CPU {
 
 		bool ORA()
 		{
-			fetch();
+			Fetch();
 			a = (byte) (a | fetched);
 			setFlag('Z',a==0x00);
 			setFlag('N',(a & 0x80)==1);
