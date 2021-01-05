@@ -151,7 +151,7 @@ namespace EmulatorMOS6502.CPU {
             //Adresowanie używane przy tzw branch instructions np JMP, pozwala na skok conajwyżej o 128 miejsc pamięci
             relAddress = ReadFromBus(programCounter);
             programCounter++;
-            //UInt16 tmp = (UInt16)(relAddress & 0x80);
+            //TODO UInt16 tmp = (UInt16)(relAddress & 0x80);
             //skok może odbywać się do przodu albo do tyłu w pamięci, dlatego trzeba sprawdzić czy adres jest ze znakiem czy też nie
             //sprawdzenie znaku jest zapewniane przez najwyższy bit pamięci(pierwszy od lewej)
             //jeśli najwyższy bit jest ustawiony to wtedy cały najwyższy Bajt ustawiamy na 1111 1111 przez co ma znaczenie 

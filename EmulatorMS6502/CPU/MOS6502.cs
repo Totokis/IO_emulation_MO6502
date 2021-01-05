@@ -7,10 +7,11 @@ namespace EmulatorMOS6502.CPU {
     public partial class MOS6502 {
 
         Bus bus = null;
-        Byte cycles = 0; // Jak coś ten Byte na Inta dać
+        int cycles = 0; // zmienna na liczbę cykli
 
         // Trzyma miejsce w pamięci z którego obecnie odczytujemy
         UInt16 absAddress = 0x0000;
+        //offset dla skoku który jest wykonywany dzięki specjalnym opcodes np JMP
         UInt16 relAddress = 0x00;
         // Zmienna trzymające dane pobrane z odpowiedniego miejsca podczas wykonywania instrukcji
         Byte fetched = 0x00;
@@ -18,18 +19,7 @@ namespace EmulatorMOS6502.CPU {
 
        // 1. parita
         #region flags
-        /*
-        public enum Flags {
-            C = (1 << 0),   // Carry Bit            00000001
-            Z = (1 << 1),   // Zero                 00000010
-            I = (1 << 2),   // Disable Interrupts   00000100
-            D = (1 << 3),   // Decimal Mode         00001000
- U = (1 << 5),   // Unused               00100000
-            V = (1 << 6),   // Overflow             01000000
-            N = (1 << 7),	// Negative             10000000
-        }
-        */
-
+        
         public static readonly Dictionary<Char, Byte> Flag
             = new Dictionary<Char, Byte> {
                 { 'C',  (1 << 0) },     // Carry Bit            00000001
@@ -41,15 +31,19 @@ namespace EmulatorMOS6502.CPU {
                 { 'V' , (1 << 6) },     // Overflow             01000000
                 { 'N' , (1 << 7) }      // Negative             10000000
             };
+        
         #endregion
 
         #region Registers
+        
         Byte a = 0x00; //Accumulator Register
         Byte x = 0x00;
         Byte y = 0x00;
         Byte stackPointer = 0x00;
         UInt16 programCounter = 0x0000;
+        //Dzięki temu znamy status flag
         Byte statusRegister = 0x00;
+        
         #endregion
 
         #region functions
@@ -85,20 +79,29 @@ namespace EmulatorMOS6502.CPU {
             bus.WriteToBus(address, data);
         }
 
-        void ConnectToBus(Bus bus) {
+        /*void ConnectToBus(Bus bus) {
             this.bus = bus;
-        }
+        } to do kosza potem*/
 
 
         void Clock() {
             if (cycles == 0) {
-
+                //zczytujemy instrukcje
                 opcode = ReadFromBus(programCounter);
+                //zbieramy ilość cykli które trzeba wykonać
+                cycles = lookup[opcode].Cycles;
                 programCounter++;
-
-                // cycle <= lookup[opcode].cycles;
+                //wykonujemy tryb adresowania, jeśli zwraca true, to oznacza, że wymaga on dodatkowy cykl na wykonanie
+                if (lookup[opcode].AdressingMode())
+                {
+                    cycles++;//dodaje plus jeden
+                }
+                //tak samo jak wyżej tylko Opcode
+                if (lookup[opcode].Opcode())
+                {
+                    cycles++;//dodaje plus jeden 
+                }
             }
-
             cycles--;
         }
 
@@ -107,19 +110,27 @@ namespace EmulatorMOS6502.CPU {
         }
 
         // IRQ interrupts (interrupt request)
+        //wykonuje instrukcje w konkretnej lokacji
         void IRQ() {
 
         }
 
         // NMI interrupts (non-maskable interrupts)
+        //wykonuje instrukcje w konkretnej lokacji, nie może być wyłączone
         void NMI() {
 
         }
 
         // Funkcja pomocnicza pobierająca potrzebne dane jeśli intrukcja takie wykorzystuje
         // i zapisująca je do zmiennej fetched dla ogólnego dostępu
-        Byte fetch() {
-            return 4;
+        
+        void Fetch() {
+            //jeśli tryb adresowania instrukcji jest inny niż Implied, ponieważ Implied przekazuje pośrednio dane przez
+            //dodatkowy adres
+            if (lookup[opcode].AdressingMode != IMP)
+            {
+                fetched = ReadFromBus(absAddress);
+            }
         }
 
 
