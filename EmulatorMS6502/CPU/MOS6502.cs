@@ -116,8 +116,27 @@ namespace EmulatorMOS6502.CPU {
         }
 
         // NMI interrupts (non-maskable interrupts)
-        //wykonuje instrukcje w konkretnej lokacji, nie może być wyłączone
+        // Zapisuje stan program counter oraz status register i wpisuje do program counter
+        // z programowalnego adresu 0xFFFA oraz 0xFFFB, te przerwania nie mogą być wyłączone
         void NMI() {
+            // Ilość cykli jakie zajmuje NMI
+            cycles = 8;
+
+            // Zapisujemy na stosie obecnie wykonywane instrukcje
+            WriteToBus((UInt16)(0x0100 + stackPointer), (Byte)((programCounter >> 8) & 0xff));
+            stackPointer--;
+            WriteToBus((UInt16)(0x0100 + stackPointer), (Byte)(programCounter & 0xff));
+            stackPointer--;
+
+            // Zapisujemy status register
+            setFlag('I', true);
+            setFlag('B', false);
+            WriteToBus((UInt16)(0x0100 + stackPointer), statusRegister);
+            stackPointer--;
+
+            // I wczytujemy program counter z odgórnie ustawionych lokalizacji (w przypadku NMI to 0xFFFA i 0xFFFB)
+            absAddress = 0xFFFA;
+            programCounter = (UInt16)((ReadFromBus(0xFFFB) << 8) | ReadFromBus(0xFFFA));
 
         }
 
