@@ -16,7 +16,7 @@ namespace EmulatorMOS6502.CPU {
         Byte fetched = 0x00;
         Byte opcode = 0x00;
 
-       // 1. parita
+        // 1. parita
         #region flags
         /*
         public enum Flags {
@@ -50,6 +50,14 @@ namespace EmulatorMOS6502.CPU {
         Byte stackPointer = 0x00;
         UInt16 programCounter = 0x0000;
         Byte statusRegister = 0x00;
+
+        public Byte A { get { return a; } } 
+        public Byte X { get { return x; } } 
+        public Byte Y { get { return y; } } 
+        public Byte StackPointer { get { return  stackPointer; } } 
+        public Byte ProgramCounter { get { return ProgramCounter; } } 
+        public Byte StatusRegister { get { return statusRegister; } } 
+
         #endregion
 
         #region functions
