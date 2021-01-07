@@ -7,18 +7,29 @@ namespace EmulatorMS6502 {
     class Bus {
         #region Devices on Bus
         MOS6502 cpu;
+        MOS6502 Cpu { get; set; }
 
-
+#endregion
+        
         #region visualisation
         public sealed class Visualisation {
             private static Visualisation instance = null;
             private static readonly object padlock = new object();
-            readonly private int pagesXPosition = 0;
-            readonly private int registersXPosition = 0;
-            readonly private int zeroPageYPosition = 0;
-            readonly private int secondpageYPosition = 18;
-            private MOS6502 cpu;
+            
+            readonly private static int registersXPosition = 53;
+            readonly private static int registersYPosition = 2;
 
+            readonly private static int pagesXPosition = 2;
+            readonly private static int secondPageYPosition = 19;
+            readonly private static int zeroPageYPosition = 1;
+
+            readonly private static int infoBarYPosition = 38;
+            readonly private static int infoBarXPosition = pagesXPosition;
+
+
+            private MOS6502 cpu;
+            
+            
             Visualisation() {
 
             }
@@ -34,11 +45,17 @@ namespace EmulatorMS6502 {
                 }
             }
 
-            public void GetCpu(MOS6502 cpuInstance) {
+            public void SetCpu(MOS6502 cpuInstance) {
                 cpu = cpuInstance;
             }
 
             public void ShowState() {
+                Console.Title = "MOS6502";
+                Console.CursorVisible = false;
+                Console.SetWindowSize(100, 40);
+                Console.BackgroundColor = ConsoleColor.Blue;
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.White;
 
                 var zeroPage = new List<string>();
                 var anotherPage = new List<string>();
@@ -59,50 +76,70 @@ namespace EmulatorMS6502 {
                     anotherPage.Add(tmp);
                 }
 
+                WriteZeroPage(zeroPage);
+                WriteSecondPage(anotherPage);
+                WriteRegisters();
+                WriteInfoBar();
+                Console.ReadKey();
+
             }
 
-            private void writeZeroPage(List<string> zeroPage) {
-                
-                var rowNumber = zeroPageYPosition;
-                zeroPage.ForEach(row =>
-                Console.SetCursorPosition(pagesXPosition, rowNumber)
+            
+            private void WriteZeroPage(List<string> zeroPage) {                
+                var rowNumber = 0;
+                Console.SetCursorPosition(pagesXPosition, zeroPageYPosition + rowNumber);
+                Console.WriteLine("Zero Page");
+                rowNumber++;
+                zeroPage.ForEach(
+                    row => {
+                        Console.SetCursorPosition(pagesXPosition, zeroPageYPosition + rowNumber);
+                        Console.Write(row);
+                        rowNumber++;
+                    }
                 );
+            }
 
+            private void WriteSecondPage(List<string> secondPage) {
+                var rowNumber = 0;
+                Console.SetCursorPosition(pagesXPosition, secondPageYPosition + rowNumber);
+                Console.WriteLine("Selected Page");
+                rowNumber++;
+                secondPage.ForEach(
+                    row => {
+                        Console.SetCursorPosition(pagesXPosition, secondPageYPosition + rowNumber);
+                        Console.Write(row);
+                        rowNumber++;
+                    }
+                );
+            }
+
+            private void WriteRegisters() {
+                var rowNumber = registersYPosition;
+
+                List<String> list = new List<string>();
+                list.Add("Flags:               N V - B D I Z C");
+                list.Add($"Program counter:     {cpu.ProgramCounter}");
+                list.Add($"Stack Pointer:       {cpu.StackPointer}");
+                list.Add($"A:                   {cpu.A}");
+                list.Add($"X:                   {cpu.X}");
+                list.Add($"Y:                   {cpu.Y}");
+
+
+                list.ForEach(x => {
+                    Console.SetCursorPosition(registersXPosition, rowNumber);
+                    Console.Write(x);
+                    rowNumber++;
+                });
 
             }
 
-            private void writeRegisters() {
-                var rowNumber = zeroPageYPosition;
-
-                Console.SetCursorPosition(registersXPosition, rowNumber);
-                Console.Write("FLAGS: N V - B D I Z C");
-                rowNumber++;
-                
-                Console.SetCursorPosition(registersXPosition, rowNumber);
-                Console.Write($"Program Counter: {cpu.ProgramCounter}");
-                rowNumber++;
-
-                Console.SetCursorPosition(registersXPosition, rowNumber);
-                Console.Write($"Stack Pointer: {cpu.StackPointer}");
-                rowNumber++;
-
-                Console.SetCursorPosition(registersXPosition, rowNumber);
-                rowNumber++;
-                Console.Write($"A: {cpu.A}");
-                rowNumber++;
-
-                Console.SetCursorPosition(registersXPosition, rowNumber);
-                Console.Write($"X: {cpu.X}");
-                rowNumber++;
-
-                Console.SetCursorPosition(registersXPosition, rowNumber);
-                Console.Write($"Y: {cpu.Y}");
+            private void WriteInfoBar() {
+                Console.SetCursorPosition(infoBarXPosition, infoBarYPosition);
+                Console.WriteLine(
+                    $"P - select Page       Space - Do next Instruciton         X - do something else");
             }
 
         }
-      
-        #endregion
-
         #endregion
 
         #region Bus functionality 

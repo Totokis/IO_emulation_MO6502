@@ -55,7 +55,7 @@ namespace EmulatorMOS6502.CPU {
         public Byte X { get { return x; } } 
         public Byte Y { get { return y; } } 
         public Byte StackPointer { get { return  stackPointer; } } 
-        public Byte ProgramCounter { get { return ProgramCounter; } } 
+        public Byte ProgramCounter { get { return Convert.ToByte(0); } } // return ProgramCounter; wywala błąd
         public Byte StatusRegister { get { return statusRegister; } } 
 
         #endregion
