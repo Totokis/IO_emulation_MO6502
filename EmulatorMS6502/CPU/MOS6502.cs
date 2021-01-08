@@ -107,17 +107,76 @@ namespace EmulatorMOS6502.CPU {
 
         void Reset() {
 
+            //vector $FFFC/$FFFD dla resetu
+            absAddress = 0xFFFC;
+            UInt16 right = ReadFromBus(absAddress++);
+            UInt16 left = ReadFromBus(absAddress++);
+            left = (UInt16)(left << 8);
+
+            //łączymy dane z bus'a do programCountera
+            programCounter = (UInt16)(left | right);
+
+            //reset wszystkiego
+            absAddress = 0;
+            relAddress = 0;
+            fetched = 0;
+            x = 0;
+            y = 0;
+            a = 0;
+            stackPointer = 0xFD; 
+            statusRegister = getFlag('U');
+
+            //reset zajmuje 8 cykli procesora
+            cycles = 8;
         }
 
         // IRQ interrupts (interrupt request)
         //wykonuje instrukcje w konkretnej lokacji
         void IRQ() {
+            if (getFlag('I') == 0)
+            {
+                WriteToBus((UInt16) (0x0100 + stackPointer),(byte)((programCounter >> 8) & 0x00FF));
+                stackPointer--;
+                WriteToBus((UInt16) (0x0100 + stackPointer), (byte)(programCounter & 0x00FF));
+                stackPointer--;
+                
+                setFlag('B',false);
+                setFlag('U',true);
+                setFlag('I',true);
+                WriteToBus((UInt16)(0x0100+stackPointer),statusRegister);
+                stackPointer--;
 
+                absAddress = 0xFFFE;
+                UInt16 lowByte = ReadFromBus((UInt16) (absAddress + 0));
+                UInt16 highByte = ReadFromBus((UInt16) (absAddress + 1));
+                programCounter = (ushort) ((highByte << 8) | lowByte);
+
+                cycles = 7;
+            }
         }
 
         // NMI interrupts (non-maskable interrupts)
-        //wykonuje instrukcje w konkretnej lokacji, nie może być wyłączone
+        // Zapisuje stan program counter oraz status register i wpisuje do program counter
+        // z programowalnego adresu 0xFFFA oraz 0xFFFB, te przerwania nie mogą być wyłączone
         void NMI() {
+            // Ilość cykli jakie zajmuje NMI
+            cycles = 8;
+
+            // Zapisujemy na stosie obecnie wykonywane instrukcje
+            WriteToBus((UInt16)(0x0100 + stackPointer), (Byte)((programCounter >> 8) & 0xff));
+            stackPointer--;
+            WriteToBus((UInt16)(0x0100 + stackPointer), (Byte)(programCounter & 0xff));
+            stackPointer--;
+
+            // Zapisujemy status register
+            setFlag('I', true);
+            setFlag('B', false);
+            WriteToBus((UInt16)(0x0100 + stackPointer), statusRegister);
+            stackPointer--;
+
+            // I wczytujemy program counter z odgórnie ustawionych lokalizacji (w przypadku NMI to 0xFFFA i 0xFFFB)
+            absAddress = 0xFFFA;
+            programCounter = (UInt16)((ReadFromBus(0xFFFB) << 8) | ReadFromBus(0xFFFA));
 
         }
 

@@ -198,10 +198,10 @@ namespace EmulatorMOS6502.CPU {
 			stackPointer++;
 			statusRegister = ReadFromBus((UInt16) (0x0100 + stackPointer));
 
-			// Pozostałe flagi takie jak Break oraz Unused nie powinny być ustawione więc je wyłączamy
-			// Chcemy zgasić B (1<<4) i U (1<<5) więc:
+			// Pozostałe flagi takie jak Break oraz nieużywana (1<<5) nie powinny być ustawione więc je wyłączamy
+			// Chcemy zgasić B=(1<<4) i (1<<5) więc:
 			// 'B'     00010000
-			// 'U'     00100000
+			// (1<<5)  00100000
 			//	48     00110000
 			//  207    11001111
 			statusRegister &= 207;
