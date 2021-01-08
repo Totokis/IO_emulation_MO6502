@@ -107,6 +107,27 @@ namespace EmulatorMOS6502.CPU {
 
         void Reset() {
 
+            //vector $FFFC/$FFFD dla resetu
+            absAddress = 0xFFFC;
+            UInt16 right = ReadFromBus(absAddress++);
+            UInt16 left = ReadFromBus(absAddress++);
+            left = (UInt16)(left << 8);
+
+            //łączymy dane z bus'a do programCountera
+            programCounter = (UInt16)(left | right);
+
+            //reset wszystkiego
+            absAddress = 0;
+            relAddress = 0;
+            fetched = 0;
+            x = 0;
+            y = 0;
+            a = 0;
+            stackPointer = 0xFD; 
+            statusRegister = getFlag('U');
+
+            //reset zajmuje 8 cykli procesora
+            cycles = 8;
         }
 
         // IRQ interrupts (interrupt request)
