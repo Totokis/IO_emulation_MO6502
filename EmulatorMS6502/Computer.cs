@@ -19,7 +19,9 @@ namespace EmulatorMS6502
         {
             while (true)
             {
+                this.mos6502.PrintInfo();
                 this.mos6502.ExecuteClockCycle();
+                Console.WriteLine("--------------------");
                 this.mos6502.PrintInfo();
                 Console.ReadKey();
             }

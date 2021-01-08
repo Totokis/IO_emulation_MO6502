@@ -1,6 +1,7 @@
 ﻿using EmulatorMS6502;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace EmulatorMOS6502.CPU {
@@ -88,6 +89,7 @@ namespace EmulatorMOS6502.CPU {
             if (cycles == 0) {
                 //zczytujemy instrukcje
                 opcode = ReadFromBus(programCounter);
+                Console.WriteLine($"--Wczytany opcode {lookup[opcode].Name}");
                 //zbieramy ilość cykli które trzeba wykonać
                 cycles = lookup[opcode].Cycles;
                 programCounter++;
@@ -127,6 +129,7 @@ namespace EmulatorMOS6502.CPU {
         void Fetch() {
             //jeśli tryb adresowania instrukcji jest inny niż Implied, ponieważ Implied przekazuje pośrednio dane przez
             //dodatkowy adres
+            Console.WriteLine($"--Fetch ABS--{absAddress}--");
             if (lookup[opcode].AdressingMode != IMP)
             {
                 fetched = ReadFromBus(absAddress);
@@ -148,9 +151,10 @@ namespace EmulatorMOS6502.CPU {
         {
             foreach (var instruction in bytes)
             {
-                bus.WriteToBus(programCounter,instruction);
                 programCounter++;
+                bus.WriteToBus(programCounter, instruction);
             }
+            programCounter = 0x0000;
         }
 
         public void InjectInstructionsAtSpecyficAddress(List<byte> bytes, ushort specyficAddress)
@@ -165,10 +169,21 @@ namespace EmulatorMOS6502.CPU {
 
         public void PrintInfo()
         {
+            string ramInfo = "";
+
+            foreach (var cell in bus.Ram)
+            {
+                ramInfo += cell + " ";
+            }
+            
             string info = $"Register A: {a} \n" +
                           $"Register X: {x} \n" +
-                          $"Program Counter: {programCounter}";
-            Console.Clear();
+                          $"Program Counter: {programCounter}\n" +
+                          $"Absoulte Address: {absAddress}\n" +
+                          $"Current opcode: {lookup[opcode].Name}\n" +
+                          $"Ram: {ramInfo}";
+            //Console.Clear();
+            
             Console.WriteLine(info);
         }
 
