@@ -210,6 +210,7 @@ namespace EmulatorMOS6502.CPU {
         {
             //zakładamy, że będziemy używać następnego byte'a, więc ustawiamy absAddress na programCounter
             absAddress = programCounter;
+            Console.WriteLine($"--Addressing Mode{absAddress}--");
             programCounter++;
             return false;
         }
