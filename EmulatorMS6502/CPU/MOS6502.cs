@@ -144,5 +144,37 @@ namespace EmulatorMOS6502.CPU {
         #endregion
 
 
+        public void InjectInstructions(List<byte> bytes)
+        {
+            foreach (var instruction in bytes)
+            {
+                bus.WriteToBus(programCounter,instruction);
+                programCounter++;
+            }
+        }
+
+        public void InjectInstructionsAtSpecyficAddress(List<byte> bytes, ushort specyficAddress)
+        {
+            ushort localAddress = specyficAddress;
+            foreach (var instruction in bytes)
+            {
+                bus.WriteToBus(localAddress,instruction);
+                localAddress++;
+            }
+        }
+
+        public void PrintInfo()
+        {
+            string info = $"Register A: {a} \n" +
+                          $"Register X: {x} \n" +
+                          $"Program Counter: {programCounter}";
+            Console.Clear();
+            Console.WriteLine(info);
+        }
+
+        public void ExecuteClockCycle()
+        {
+            Clock();
+        }
     }
 }
