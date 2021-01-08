@@ -20,6 +20,11 @@ namespace EmulatorMOS6502.CPU {
         // która wykonuje operacje arytmetyczne) do akumulatora czyli 
         // rejestru które przechowywuje wyniki operacji ALU
         bool IMP() {
+            // Przerzuca fetched (który reprezentuje wykonywany 
+            // input w ALU - czyli w jednostce arytmetyczno-logicznej, 
+            // która wykonuje operacje arytmetyczne) do akumulatora czyli 
+            // rejestru które przechowywuje wyniki operacji ALU
+            Console.WriteLine("--SIEMANO--");
             fetched = a;
             return false;
         }

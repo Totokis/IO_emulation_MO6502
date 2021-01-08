@@ -8,7 +8,7 @@ namespace EmulatorMOS6502.CPU {
 
         Instruction[] lookup;
         private class Instruction {
-            public Instruction(string name, Func<bool> opcode, Func<bool> adressingMode, byte cycles) {
+            public Instruction(string name, Func<bool> opcode,Func<bool> adressingMode, byte cycles) {
                 Name = name;
                 Opcode = opcode;
                 AdressingMode = adressingMode;
