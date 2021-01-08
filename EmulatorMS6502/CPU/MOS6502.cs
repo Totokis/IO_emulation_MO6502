@@ -133,7 +133,26 @@ namespace EmulatorMOS6502.CPU {
         // IRQ interrupts (interrupt request)
         //wykonuje instrukcje w konkretnej lokacji
         void IRQ() {
+            if (getFlag('I') == 0)
+            {
+                WriteToBus((UInt16) (0x0100 + stackPointer),(byte)((programCounter >> 8) & 0x00FF));
+                stackPointer--;
+                WriteToBus((UInt16) (0x0100 + stackPointer), (byte)(programCounter & 0x00FF));
+                stackPointer--;
+                
+                setFlag('B',false);
+                setFlag('U',true);
+                setFlag('I',true);
+                WriteToBus((UInt16)(0x0100+stackPointer),statusRegister);
+                stackPointer--;
 
+                absAddress = 0xFFFE;
+                UInt16 lowByte = ReadFromBus((UInt16) (absAddress + 0));
+                UInt16 highByte = ReadFromBus((UInt16) (absAddress + 1));
+                programCounter = (ushort) ((highByte << 8) | lowByte);
+
+                cycles = 7;
+            }
         }
 
         // NMI interrupts (non-maskable interrupts)
