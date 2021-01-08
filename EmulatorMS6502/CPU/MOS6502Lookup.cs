@@ -8,22 +8,22 @@ namespace EmulatorMOS6502.CPU {
 
         Instruction[] lookup;
         private class Instruction {
-            public Instruction(string name, Func<bool> adressingMode, Func<bool> opcode, byte cycles) {
+            public Instruction(string name, Func<bool> opcode, Func<bool> adressingMode, byte cycles) {
                 Name = name;
-                AdressingMode = adressingMode;
                 Opcode = opcode;
+                AdressingMode = adressingMode;
                 Cycles = cycles;
             }
             
             public string Name { get; }
-            public Func<bool> AdressingMode { get; }
             public Func<bool> Opcode { get; }
+            public Func<bool> AdressingMode { get; }
             public Byte Cycles { get; }
         }
 
         //Lepiej będzie zainicjować poprzez funkcję z krótka nazwą w macierzy zamiast pisać całą formułkę 16x16 razy 
-        Instruction cI(string name, Func<bool> adressingMode, Func<bool> opcode, byte cycles) {
-            var result = new Instruction(name, adressingMode, opcode, cycles);
+        Instruction cI(string name, Func<bool> opcode, Func<bool> adressingMode, byte cycles) {
+            var result = new Instruction(name, opcode, adressingMode, cycles);
             return result;
         }
 
