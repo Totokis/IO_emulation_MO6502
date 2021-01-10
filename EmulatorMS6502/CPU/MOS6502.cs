@@ -80,11 +80,11 @@ namespace EmulatorMOS6502.CPU {
         }
 
         Byte ReadFromBus(UInt16 address) {
-            return bus.ReadFromBus(address);
+            return Bus.Instance.ReadFromBus(address);
         }
 
         void WriteToBus(UInt16 address, Byte data) {
-            bus.WriteToBus(address, data);
+            Bus.Instance.WriteToBus(address, data);
         }
 
         /*void ConnectToBus(Bus bus) {
@@ -195,7 +195,7 @@ namespace EmulatorMOS6502.CPU {
         void Fetch() {
             //jeśli tryb adresowania instrukcji jest inny niż Implied, ponieważ Implied przekazuje pośrednio dane przez
             //dodatkowy adres
-            Console.WriteLine($"--Fetch ABS--{absAddress}--");
+            //Console.WriteLine($"--Fetch ABS--{absAddress}--");
             if (lookup[opcode].AdressingMode != IMP)
             {
                 fetched = ReadFromBus(absAddress);
@@ -218,7 +218,7 @@ namespace EmulatorMOS6502.CPU {
             foreach (var instruction in bytes)
             {
                 programCounter++;
-                bus.WriteToBus(programCounter, instruction);
+                Bus.Instance.WriteToBus(programCounter, instruction);
             }
             programCounter = 0x0000;
         }
@@ -228,7 +228,7 @@ namespace EmulatorMOS6502.CPU {
             ushort localAddress = specyficAddress;
             foreach (var instruction in bytes)
             {
-                bus.WriteToBus(localAddress,instruction);
+                Bus.Instance.WriteToBus(localAddress,instruction);
                 localAddress++;
             }
         }
@@ -237,9 +237,9 @@ namespace EmulatorMOS6502.CPU {
         {
             string ramInfo = "";
 
-            foreach (var cell in bus.Ram)
+            for (int i = 0; i<30; i++)
             {
-                ramInfo += cell + " ";
+                ramInfo += Bus.Instance.Ram[i] + " ";
             }
             
             string info = $"Register A: {a} \n" +
