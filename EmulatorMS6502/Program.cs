@@ -9,8 +9,6 @@ namespace EmulatorMS6502 {
             MOS6502 Cpu = new MOS6502();
             Bus.Visualisation.Instance.SetCpu(Cpu);
             Bus.Visualisation.Instance.ShowState();
-
-            
         }
     }
 }
