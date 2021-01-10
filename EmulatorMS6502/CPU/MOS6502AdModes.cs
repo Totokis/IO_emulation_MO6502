@@ -3,33 +3,42 @@ using System.Collections.Generic;
 using System.Text;
 
 // TRYBY ADRESOWANIA
-// Plik zawiera implementację trybów adresowania dla MOS6502
+/// <summary>
+/// Plik zawiera implementację trybów adresowania dla MOS6502
+/// </summary>
 namespace EmulatorMOS6502.CPU {
     public partial class MOS6502 {
 
-        //Tryby adresowania
-        //Totalnie przykładowy tryb adresowania 
-        bool exAddressMode() {
-            return false;
-        }
-
+        /// <summary>
+        /// Implied Addresing Modes
+        /// Jest używany przez instrukcje, które nie mają żadnych danych przekazywanych do siebie
+        /// Instrukcje go używające mogą jednak operować na akumulatorze więc tryb przerzuca dane
+        /// ze zmiennej fetched do akumulatora
+        /// </summary>
+        // Przerzuca fetched (który reprezentuje wykonywany 
+        // input w ALU - czyli w jednostce arytmetyczno-logicznej, 
+        // która wykonuje operacje arytmetyczne) do akumulatora czyli 
+        // rejestru które przechowywuje wyniki operacji ALU
         bool IMP() {
             // Przerzuca fetched (który reprezentuje wykonywany 
             // input w ALU - czyli w jednostce arytmetyczno-logicznej, 
             // która wykonuje operacje arytmetyczne) do akumulatora czyli 
             // rejestru które przechowywuje wyniki operacji ALU
+            Console.WriteLine("--SIEMANO--");
             fetched = a;
             return false;
         }
 
-        // Indirect
-        // Tryb adresowania działa jak wskaźnik czyli
-        // to co odczytujemy z adresu wysłanego z intrukcją, to
-        // kolejny adres (intrukcja 3 bajty =>
-        // 1 bajt - intrukcja (np LDA), 
-        // 2 bajt - 1 część adresu
-        // 3 bajt - 2 część adresu
-        // i w tamtej lolizacji znajduje się kolejny adres
+        /// <summary>
+        /// Indirect Addressing Modes - 
+        /// ten Tryb adresowania działa jak wskaźnik czyli
+        /// to co odczytujemy z adresu wysłanego z intrukcją, to
+        /// kolejny adres (intrukcja 3 bajty =>
+        /// 1 bajt - intrukcja (np LDA), 
+        /// 2 bajt - 1 część adresu
+        /// 3 bajt - 2 część adresu
+        /// i w tamtej lolizacji znajduje się kolejny adres
+        /// </summary>
         bool IND()
         {
             // Low bajt (8 bitów po prawej)
@@ -55,7 +64,9 @@ namespace EmulatorMOS6502.CPU {
             return false;
         }
 
-        // Indirect Zero Page z dodanym rejestrem X
+        /// <summary>
+        /// Indirect Zero Page z dodanym rejestrem X
+        /// </summary>
         // Czytamy adres który znajdzie się na stronie 0 : 0000 0000 [bajt adres]
         bool IZX()
         {
@@ -79,6 +90,10 @@ namespace EmulatorMOS6502.CPU {
         // 0x00FF - ostatni bajt na stronie 0
         // 00 - High Byte oznacza strone (Page)
         // FF - Offset na stronie
+        /// <summary>
+        /// Zero Page Addressing Mode pozwala za pomocą mniejszej ilości cykli (przez co szybciej) dostać się do danych umieszczonych
+        /// na zerowej stronie. Jedyna różnica od ZP0 jest taka że ma dodany rejestr X.
+        /// </summary>
         bool ZPY()
         { 
             // Wczytanie adresu podanego z instrukcją i dodanie wartości rejestru Y
@@ -90,6 +105,10 @@ namespace EmulatorMOS6502.CPU {
             return false;
         }
 
+        /// <summary>
+        /// Zero Page Addressing Mode pozwala za pomocą mniejszej ilości cykli (przez co szybciej) dostać się do danych umieszczonych
+        /// na zerowej stronie. Jedyna różnica od ZP0 jest taka że ma dodany rejestr X.
+        /// </summary>
         bool ZPX() {
             // Wczytanie adresu podanego z instrukcją i dodanie wartości rejestru X
             absAddress = (Byte)(ReadFromBus(programCounter) + x);
@@ -100,7 +119,10 @@ namespace EmulatorMOS6502.CPU {
             return false;
         }
 
-
+        /// <summary>
+        /// Zero Page Addressing Mode pozwala za pomocą mniejszej ilości cykli(przez co szybciej) dostać się do danych umieszczonych
+        /// na zerowej stronie danych.
+        /// </summary>
         bool ZP0()
         {
             //Zero Page Addressing pozwalał za pomocą mniejszej ilości cykli(przez co szybciej) dostać się do danych umieszczonych
@@ -129,7 +151,11 @@ namespace EmulatorMOS6502.CPU {
             else
                 return false;
         }
-
+        /// <summary>
+        /// Absolute Addresing Mode with X Offset
+        /// Robi dokładnie to samo co ABS poza tym że zawartość rejestru X jest dodawany do absolute address.
+        /// Jeżeli w trakcie działania instrukcji zmieni się strona adresu to instrukcja wymaga dodatkowego cyklu.
+        /// </summary>
         bool ABX()
         {
             //konstruujemy adres z dwóch bajtów, dlatego najpierw pobieramy low byte a potem high byte
@@ -146,12 +172,15 @@ namespace EmulatorMOS6502.CPU {
             else
                 return false;
         }
-
+        /// <summary>
+        /// Relative Addressing Mode
+        /// Używają go tylko instrukcje typu branch, które nie mogą bezpośrednio przechodzić do dowolonego adresu z zakresu adresowalnego (max 128 miejsc w pamięci)
+        /// </summary>
         bool REL(){
             //Adresowanie używane przy tzw branch instructions np JMP, pozwala na skok conajwyżej o 128 miejsc pamięci
             relAddress = ReadFromBus(programCounter);
             programCounter++;
-            //UInt16 tmp = (UInt16)(relAddress & 0x80);
+            //TODO UInt16 tmp = (UInt16)(relAddress & 0x80);
             //skok może odbywać się do przodu albo do tyłu w pamięci, dlatego trzeba sprawdzić czy adres jest ze znakiem czy też nie
             //sprawdzenie znaku jest zapewniane przez najwyższy bit pamięci(pierwszy od lewej)
             //jeśli najwyższy bit jest ustawiony to wtedy cały najwyższy Bajt ustawiamy na 1111 1111 przez co ma znaczenie 
@@ -178,14 +207,23 @@ namespace EmulatorMOS6502.CPU {
                 return false;
         }
 
+        /// <summary>
+        /// Immediate Addresing Mode
+        /// Instrukcja zakłada, że będziemy używać następnego byte'a, więc ustawia absolute address na programCounter
+        /// </summary>
         bool IMM() //Immediate
         {
             //zakładamy, że będziemy używać następnego byte'a, więc ustawiamy absAddress na programCounter
             absAddress = programCounter;
+            Console.WriteLine($"--Addressing Mode{absAddress}--");
             programCounter++;
             return false;
         }
 
+        /// <summary>
+        /// Absolute Addresing Mode
+        /// Instrukcja wczytuje 16 bitowy address, wykonule działąnie i zapisuje jako absolute
+        /// </summary>
         bool ABS()
         {
             //wczytujemy caly adres

@@ -4,7 +4,7 @@ using System.Text;
 using EmulatorMOS6502.CPU;
 
 namespace EmulatorMS6502 {
-    class Bus {
+    public class Bus {
         #region Devices on Bus
         MOS6502 cpu;
         MOS6502 Cpu { get; set; }
@@ -144,12 +144,18 @@ namespace EmulatorMS6502 {
 
         #region Bus functionality 
         public void WriteToBus(UInt16 address, Byte data) {
-            throw new NotImplementedException(); //tu będzie czytanie z ramu 
+            Ram[address] = data;
         }
 
         public Byte ReadFromBus(UInt16 address, bool isReadOnly = false) //TODO Jak nie użyte to wywalić isReadOnly
         {
-            throw new NotImplementedException();
+            //Console.WriteLine("RAM data: "+ Ram[address]);
+            return Ram[address];
+        }
+
+        public Bus(int ramCapacity)
+        {
+            Ram = new byte[ramCapacity];
         }
 
         #endregion
