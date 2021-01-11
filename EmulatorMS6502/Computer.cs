@@ -10,20 +10,21 @@ namespace EmulatorMS6502
         private MOS6502 mos6502;
         private Bus bus;
         private Dissassembler dissassembler;
-        public void StartComputer()
-        {
-            var instructions = GatherInstructions();
-            var bytes = ConvertInstructionsToBytes(instructions);
-            List<string> translatedInstructions = dissassembler.TranslateToHuman(bytes);
-            foreach (var str in translatedInstructions)
-            {
-                Console.WriteLine(str);
-            }
-            dissassembler.Clear();
-            // LoadProgramIntoMemory(bytes);
-            // Run();
-        }
+        private static Computer instance = null;
+        private static readonly object compPadlock = new object();
 
+
+        public static Computer Instance {
+            get {
+                lock(compPadlock) {
+                    if(instance == null) {
+                        instance = new Computer();
+                    }
+                    return instance;
+                }
+            }
+        }
+        
         private List<byte> ConvertInstructionsToBytes(string instructions)
         {
             List<Byte> bytes = new List<byte>();
@@ -34,13 +35,32 @@ namespace EmulatorMS6502
             }
             return bytes;
         }
+        
+        public void StartComputer()
+        {
+            var instructions = GatherInstructions();
+            //this.mos6502.PrintInfo();
+            var bytes = ConvertInstructionsToBytes(instructions);
+            List<string> translatedInstructions = dissassembler.TranslateToHuman(bytes);
+            foreach (var str in translatedInstructions)
+            {
+                Console.WriteLine(str);
+            }
+            dissassembler.Clear();
+            Visualisation.Instance.SetCpu(mos6502);
+            LoadProgramIntoMemory(bytes);
+            
+            Run();
+        }
 
         private void Run()
         {
             while (true)
             {
-                this.mos6502.PrintInfo();
                 this.mos6502.ExecuteNormalClockCycle();
+                //Computer.Visualisation.Instance.ShowState();
+                Console.WriteLine("--------------------");
+                this.mos6502.PrintInfo();
                 Console.ReadKey();
             }
         }
@@ -179,84 +199,148 @@ namespace EmulatorMS6502
             return false;
         }
 
-        public Computer(int ramCapacity)
+        public void initComputer(int ramCapacity)
         {
             this.bus = new Bus(ramCapacity);
             this.mos6502 = new MOS6502(bus);
             this.dissassembler = new Dissassembler(this.mos6502);
+            Bus.Instance.setRamCapacity(ramCapacity);
+            this.mos6502 = new MOS6502(Bus.Instance);
         }
     }
 
-    public class Dissassembler
-    {
-        private MOS6502 _mos6502;
-        public Dissassembler(MOS6502 mos6502)
-        {
-            this._mos6502 = mos6502;
-        }
-        public List<string> TranslateToHuman(List<byte> bytes)
-        {
-            int maxProgramLength = bytes.Capacity;
-            _mos6502.InjectInstructions(bytes);
-            return ExecuteInjectedProgramAndGenerateInstructions(maxProgramLength);
-        }
+    #region visualisation
+        public sealed class Visualisation {
+            private static Visualisation instance = null;
+            private static readonly object padlock = new object();
 
-        public List<string> ExecuteInjectedProgramAndGenerateInstructions(int maxProgramLength)
-        {
-            List<string> listOfDissassembledInstructions = new List<string>();
-            DissassemblyInstruction dissassemblyInstruction = new DissassemblyInstruction();
-            while (maxProgramLength != 0)
-            {
-                //Console.WriteLine("Inside while: "+ _mos6502.GetCurrentCycle() );
-                if (_mos6502.GetCurrentCycle() == 0)
-                {
-                    _mos6502.ExecuteSpecialDebugClockCycle(dissassemblyInstruction);
-                    listOfDissassembledInstructions.Add(dissassemblyInstruction.ToString());
-                    maxProgramLength--;
+            readonly private static int registersXPosition = 53;
+            readonly private static int registersYPosition = 2;
+
+            readonly private static int pagesXPosition = 2;
+            readonly private static int secondPageYPosition = 19;
+            readonly private static int zeroPageYPosition = 1;
+
+            readonly private static int infoBarYPosition = 38;
+            readonly private static int infoBarXPosition = pagesXPosition;
+
+            private bool isInitialized = false;
+
+            private MOS6502 cpu;
+            private Computer computer = Computer.Instance;
+
+            Visualisation() {
+
+            }
+
+            public static Visualisation Instance {
+                get {
+                    lock(padlock) {
+                        if(instance == null) {
+                            instance = new Visualisation();
+                        }
+                        return instance;
+                    }
                 }
-                _mos6502.ExecuteNormalClockCycle();
             }
-            return listOfDissassembledInstructions;
-        }
 
-        public void Clear()
-        {
-            _mos6502.Clear();
-        }
-    }
-
-    public class DissassemblyInstruction
-    {
-        private string opcodeName;
-        private string addressingMode;
-        private string argument;
-        public void SetOpcodeName(string name)
-        {
-            this.opcodeName = name;
-        }
-
-        public void SetAdressingModeName(string methodName)
-        {
-            this.addressingMode = methodName;
-        }
-
-        public void SetArgument(string getArgument)
-        {
-            this.argument = getArgument;
-        }
-
-        public string ToString(bool showDecimals = true)
-        {
-            int arg = Byte.Parse(argument);
-            if (addressingMode == "IMM")
-            {
-                return opcodeName + " #$" + arg.ToString("X") + $"[{arg}] " + addressingMode;
+            public void SetCpu(MOS6502 cpuInstance) {
+                cpu = cpuInstance;
             }
-            else
-            {
-                return opcodeName + " $" + arg.ToString("X") + $"[{arg}] " + addressingMode;
+
+            public void ShowState() {
+                Console.Title = "MOS6502";
+                Console.CursorVisible = false;
+                Console.SetWindowSize(100, 40);
+                Console.BackgroundColor = ConsoleColor.Blue;
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.White;
+
+                var zeroPage = new List<string>();
+                var anotherPage = new List<string>();
+
+                
+                for(int i = 0; i < 256; i++) {
+                    string tmp = "";
+                    for(int j = 0; j < 16; j++) {
+                        tmp += $"{Bus.Instance.Ram[i]} ";
+                        i++;
+                    }
+                    zeroPage.Add(tmp);
+                }
+
+                for(int i = 0; i < 16; i++) {
+                    string tmp = "";
+                    for(int j = 0; j < 16; j++) {
+                        tmp += "00 ";
+                    }
+                    anotherPage.Add(tmp);
+                }
+
+                WriteZeroPage(zeroPage);
+                //WriteSecondPage(anotherPage);
+                WriteRegisters();
+                WriteInfoBar();
+                Console.ReadKey();
+
             }
-           
+
+
+            private void WriteZeroPage(List<string> zeroPage) {
+                var rowNumber = 0;
+                Console.SetCursorPosition(pagesXPosition, zeroPageYPosition + rowNumber);
+                Console.WriteLine("Zero Page");
+                rowNumber++;
+                zeroPage.ForEach(
+                    row => {
+                        Console.SetCursorPosition(pagesXPosition, zeroPageYPosition + rowNumber);
+                        Console.Write(row);
+                        rowNumber++;
+                    }
+                );
+            }
+
+            private void WriteSecondPage(List<string> secondPage) {
+                var rowNumber = 0;
+                Console.SetCursorPosition(pagesXPosition, secondPageYPosition + rowNumber);
+                Console.WriteLine("Selected Page");
+                rowNumber++;
+                secondPage.ForEach(
+                    row => {
+                        Console.SetCursorPosition(pagesXPosition, secondPageYPosition + rowNumber);
+                        Console.Write(row);
+                        rowNumber++;
+                    }
+                );
+            }
+
+            private void WriteRegisters() {
+                var rowNumber = registersYPosition;
+
+                List<String> list = new List<string>();
+                list.Add("Flags:               N V - B D I Z C");
+                list.Add($"Current Instruction:"); //{cpu.loo");
+
+                list.Add($"Program counter:     {cpu.ProgramCounter}");
+                list.Add($"Stack Pointer:       {cpu.StackPointer}");
+                list.Add($"A:                   {cpu.A}");
+                list.Add($"X:                   {cpu.X}");
+                list.Add($"Y:                   {cpu.Y}");
+
+
+                list.ForEach(x => {
+                    Console.SetCursorPosition(registersXPosition, rowNumber);
+                    Console.Write(x);
+                    rowNumber++;
+                });
+
+            }
+
+            private void WriteInfoBar() {
+                Console.SetCursorPosition(infoBarXPosition, infoBarYPosition);
+                Console.WriteLine(
+                    $"Tu b�d� instrukcje obs�ugi");
+            }
         }
-    }
+        #endregion
 }

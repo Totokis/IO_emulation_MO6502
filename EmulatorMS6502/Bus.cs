@@ -7,13 +7,28 @@ namespace EmulatorMS6502 {
     public class Bus {
         #region Devices on Bus
         MOS6502 cpu;
-
+        MOS6502 Cpu { get; set; }
         public Byte[] Ram = new byte[1024];
-        
+
+        private static Bus instance = null;
+        private static readonly object compPadlock = new object();
+
+        public static Bus Instance {
+            get {
+                lock(compPadlock) {
+                    if(instance == null) {
+                        instance = new Bus();
+                    }
+                    return instance;
+                }
+            }
+        }
 
         #endregion
 
-        #region Bus functionality
+
+
+        #region Bus functionality 
         public void WriteToBus(UInt16 address, Byte data) {
             Ram[address] = data;
         }
@@ -26,6 +41,15 @@ namespace EmulatorMS6502 {
 
         public Bus(int ramCapacity)
         {
+            Ram = new byte[ramCapacity];
+        }
+
+        public Bus()
+        {
+            
+        }
+
+        public void setRamCapacity(int ramCapacity) {
             Ram = new byte[ramCapacity];
         }
 

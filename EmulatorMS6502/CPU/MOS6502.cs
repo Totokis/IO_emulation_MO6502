@@ -19,7 +19,7 @@ namespace EmulatorMOS6502.CPU {
         Byte fetched = 0x00;
         Byte opcode = 0x00;
 
-       // 1. parita
+        // 1. parita
         #region flags
         
         public static readonly Dictionary<Char, Byte> Flag
@@ -45,7 +45,14 @@ namespace EmulatorMOS6502.CPU {
         UInt16 programCounter = 0x0000;
         //Dzięki temu znamy status flag
         Byte statusRegister = 0x00;
-        
+
+        public Byte A { get { return a; } } 
+        public Byte X { get { return x; } } 
+        public Byte Y { get { return y; } } 
+        public Byte StackPointer { get { return  stackPointer; } } 
+        public Byte ProgramCounter { get { return Convert.ToByte(0); } } // return ProgramCounter; wywala błąd
+        public Byte StatusRegister { get { return statusRegister; } } 
+
         #endregion
 
         #region functions
@@ -74,11 +81,11 @@ namespace EmulatorMOS6502.CPU {
         }
 
         Byte ReadFromBus(UInt16 address) {
-            return bus.ReadFromBus(address);
+            return Bus.Instance.ReadFromBus(address);
         }
 
         void WriteToBus(UInt16 address, Byte data) {
-            bus.WriteToBus(address, data);
+            Bus.Instance.WriteToBus(address, data);
         }
 
         /*void ConnectToBus(Bus bus) {
@@ -189,7 +196,7 @@ namespace EmulatorMOS6502.CPU {
         void Fetch() {
             //jeśli tryb adresowania instrukcji jest inny niż Implied, ponieważ Implied przekazuje pośrednio dane przez
             //dodatkowy adres
-            Console.WriteLine($"--Fetch ABS--{absAddress}--");
+            //Console.WriteLine($"--Fetch ABS--{absAddress}--");
             if (lookup[opcode].AdressingMode != IMP)
             {
                 fetched = ReadFromBus(absAddress);
@@ -209,8 +216,8 @@ namespace EmulatorMOS6502.CPU {
         {
             foreach (var instruction in bytes)
             {
-                bus.WriteToBus(programCounter, instruction);
                 programCounter++;
+                Bus.Instance.WriteToBus(programCounter, instruction);
             }
             programCounter = 0x0000;
         }
@@ -220,7 +227,7 @@ namespace EmulatorMOS6502.CPU {
             ushort localAddress = specyficAddress;
             foreach (var instruction in bytes)
             {
-                bus.WriteToBus(localAddress,instruction);
+                Bus.Instance.WriteToBus(localAddress,instruction);
                 localAddress++;
             }
         }
@@ -228,11 +235,11 @@ namespace EmulatorMOS6502.CPU {
         public void PrintInfo()
         {
             string ramInfo = "";
-            int startRange = programCounter;
-            int endRange = programCounter + 50;
-            for (int i = programCounter; i < endRange;i++)
+            
+            for (int i = 0; i<30; i++)
             {
-                ramInfo += bus.Ram[i] + " ";
+                ramInfo += Bus.Instance.Ram[i] + " ";
+
             }
             // foreach (var cell in bus.Ram)
             // {
