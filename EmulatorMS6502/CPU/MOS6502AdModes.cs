@@ -24,7 +24,7 @@ namespace EmulatorMOS6502.CPU {
             // input w ALU - czyli w jednostce arytmetyczno-logicznej, 
             // która wykonuje operacje arytmetyczne) do akumulatora czyli 
             // rejestru które przechowywuje wyniki operacji ALU
-            Console.WriteLine("--sfetchowane--\n\n");
+            //Console.WriteLine("--sfetchowane--\n\n");
             fetched = a;
             return false;
         }
@@ -116,6 +116,7 @@ namespace EmulatorMOS6502.CPU {
             absAddress &= 0x00FF;
             // Inkrementacja PC
             programCounter++;
+            
             return false;
         }
 
@@ -215,7 +216,7 @@ namespace EmulatorMOS6502.CPU {
         {
             //zakładamy, że będziemy używać następnego byte'a, więc ustawiamy absAddress na programCounter
             absAddress = programCounter;
-            Console.WriteLine($"--Addressing Mode{absAddress}--");
+            //Console.WriteLine($"--Addressing Mode{absAddress}--");
             programCounter++;
             return false;
         }

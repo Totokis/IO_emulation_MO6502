@@ -97,7 +97,7 @@ namespace EmulatorMOS6502.CPU {
             if (cycles == 0) {
                 //zczytujemy instrukcje
                 opcode = ReadFromBus(programCounter);
-                Console.WriteLine($"--Wczytany opcode {lookup[opcode].Name}");
+                //Console.WriteLine($"--Wczytany opcode {lookup[opcode].Name}");
                 //zbieramy ilość cykli które trzeba wykonać
                 cycles = lookup[opcode].Cycles;
                 programCounter++;
@@ -231,7 +231,7 @@ namespace EmulatorMOS6502.CPU {
                 localAddress++;
             }
         }
-
+        /*
         public void PrintInfo()
         {
             string ramInfo = "";
@@ -255,7 +255,7 @@ namespace EmulatorMOS6502.CPU {
             //Console.Clear();
             
             Console.WriteLine(info);
-        }
+        }*/
 
         public void ExecuteNormalClockCycle()
         {
@@ -268,7 +268,7 @@ namespace EmulatorMOS6502.CPU {
                 cycles = lookup[opcode].Cycles;
                 programCounter++;
                 
-                Console.WriteLine($"--Wczytany opcode {lookup[opcode].Name}, addressing mode: {lookup[opcode].AdressingMode.Method.Name}");
+                //Console.WriteLine($"--Wczytany opcode {lookup[opcode].Name}, addressing mode: {lookup[opcode].AdressingMode.Method.Name}");
                 instruction.SetOpcodeName(lookup[opcode].Name);
                 instruction.SetAdressingModeName(lookup[opcode].AdressingMode.Method.Name);
                 instruction.SetArgument(GetArgument());
