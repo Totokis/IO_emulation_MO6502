@@ -7,7 +7,7 @@ namespace EmulatorMS6502 {
         static void Main(string[] args) {
 
 
-            Computer.Instance.initComputer(965535);
+            Computer.Instance.initComputer((256*256));//czyli 64kB
             Computer.Instance.StartComputer();
         }
     }

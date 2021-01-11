@@ -17,7 +17,7 @@ namespace EmulatorMS6502
             return ExecuteInjectedProgramAndGenerateInstructions(maxProgramLength);
         }
 
-        public List<string> ExecuteInjectedProgramAndGenerateInstructions(int maxProgramLength)
+        private List<string> ExecuteInjectedProgramAndGenerateInstructions(int maxProgramLength)
         {
             List<string> listOfDissassembledInstructions = new List<string>();
             DissassemblyInstruction dissassemblyInstruction = new DissassemblyInstruction();
