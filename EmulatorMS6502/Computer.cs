@@ -35,19 +35,18 @@ namespace EmulatorMS6502 {
         public void StartComputer() {
 
             dissassembler.Clear();
+            Visualisation.Instance.InitVisualisation();
             Visualisation.Instance.SetCpu(mos6502);
-            Run();
+            
+            while(true) {
+                Visualisation.Instance.ShowState();
+            }
         }
 
         private void Run() {
-            while(true) {
-                Visualisation.Instance.ShowState();
+            for(int i = 0; i < 100; i++)
                 this.mos6502.ExecuteNormalClockCycle();
-                //Computer.Visualisation.Instance.ShowState();
-                Console.WriteLine("--------------------");
-                this.mos6502.PrintInfo();
-                Console.ReadKey();
-            }
+
         }
 
         private string GatherInstructions() {
@@ -169,7 +168,7 @@ namespace EmulatorMS6502 {
             return false;
         }
 
-        public List<string> gatherAndRun() {
+        public List<string> GatherAndRun() {
             var instructions = Computer.Instance.GatherInstructions();
             var bytes = ConvertInstructionsToBytes(instructions);
             List<string> translatedInstructions = dissassembler.TranslateToHuman(bytes);
@@ -192,6 +191,8 @@ namespace EmulatorMS6502 {
         private static Visualisation instance = null;
         private static readonly object padlock = new object();
         private List<String> instructionsInHuman = null;
+        private bool isFistTime = true;
+        private int currentPageNumber = 1;
 
         readonly private static int registersXPosition = 53;
         readonly private static int registersYPosition = 2;
@@ -203,10 +204,7 @@ namespace EmulatorMS6502 {
         readonly private static int infoBarYPosition = 38;
         readonly private static int infoBarXPosition = pagesXPosition;
 
-        private bool isInitialized = false;
-
         private MOS6502 cpu;
-        private Computer computer = Computer.Instance;
 
         Visualisation() {
 
@@ -227,40 +225,52 @@ namespace EmulatorMS6502 {
             cpu = cpuInstance;
         }
 
-            public void ShowState() {
-                Console.Title = "MOS6502";
-                Console.CursorVisible = false;
-               if(Environment.OSVersion.Platform!=System.PlatformID.Unix)
-                    Console.SetWindowSize(100, 40);
-               Console.BackgroundColor = ConsoleColor.Blue;
-                Console.Clear();
-                Console.ForegroundColor = ConsoleColor.White;
+        public void InitVisualisation() {
+            Console.Title = "MOS6502";
+            Console.CursorVisible = false;
+            //Console.ForegroundColor = ConsoleColor.White;
+            //Console.BackgroundColor = ConsoleColor.Blue;
+        }
 
+        private void WriteAll() {
             var zeroPage = new List<string>();
             var anotherPage = new List<string>();
 
-                
-                for(int i = 0; i < 256; i++) {
-                    string tmp = "";
-                    for(int j = 0; j < 16; j++) {
-                        tmp += $"{Bus.Instance.Ram[i].ToString("X2")} ";//hexowe wyświetlanie liczb,
-                        i++;
-                    }
-                    zeroPage.Add(tmp);
-                }
 
-            for(int i = 0; i < 16; i++) {
+            for(int i = 0; i < 256; i++) {
                 string tmp = "";
                 for(int j = 0; j < 16; j++) {
-                    tmp += "00 ";
+                    tmp += $"{Bus.Instance.Ram[i].ToString("X2")} ";//hexowe wyświetlanie liczb,
+                    i++;
+                }
+                zeroPage.Add(tmp);
+            }
+
+            for(int i = 0 + currentPageNumber * 256; i < 256 + currentPageNumber * 256; i++) {
+                string tmp = "";
+                for(int j = 0; j < 16; j++) {
+                    tmp += $"{Bus.Instance.Ram[i].ToString("X2")} "; //hexowe wyświetlanie liczb
+                    i++;
                 }
                 anotherPage.Add(tmp);
             }
 
             WriteZeroPage(zeroPage);
-            //WriteSecondPage(anotherPage);
-            WriteRegisters(instructionsInHuman);
+            WriteSecondPage(anotherPage);
+            WriteRegisters();
             WriteInfoBar();
+        }
+
+        public void ShowState() {
+
+            if(Environment.OSVersion.Platform != System.PlatformID.Unix)
+                Console.SetWindowSize(100, 40);
+           
+
+            if(isFistTime) { 
+                WriteAll();
+                isFistTime = false;
+            }
             Console.SetCursorPosition(2, infoBarYPosition);
             var choose = Console.ReadKey();
             Console.SetCursorPosition(2, infoBarYPosition);
@@ -268,7 +278,7 @@ namespace EmulatorMS6502 {
                 case ConsoleKey.A:
                     Console.Write("Wprowadz program który chcesz uruhomić:\n");
                     Console.SetCursorPosition(2, infoBarYPosition + 1);
-                    instructionsInHuman = Computer.Instance.gatherAndRun();
+                    instructionsInHuman = Computer.Instance.GatherAndRun();
                     break;
                 case ConsoleKey.Escape:
                     Environment.Exit(0);
@@ -276,11 +286,17 @@ namespace EmulatorMS6502 {
                 case ConsoleKey.R:
                     Bus.Instance.Ram = new byte[256 * 256];
                     break;
+                case ConsoleKey.P:
+                    Console.Write("Wprowadz numer strony którą chcesz wyswietlić:\n");
+                    Console.SetCursorPosition(2, infoBarYPosition + 1);
+                    currentPageNumber = Convert.ToInt32( Console.ReadLine());
+                    break;
                 default:
                     Console.WriteLine("Do Nothing");
                     break;
             }
-
+            WriteAll();
+            ClearBottom();
         }
 
         private void WriteZeroPage(List<string> zeroPage) {
@@ -300,7 +316,7 @@ namespace EmulatorMS6502 {
         private void WriteSecondPage(List<string> secondPage) {
             var rowNumber = 0;
             Console.SetCursorPosition(pagesXPosition, secondPageYPosition + rowNumber);
-            Console.WriteLine("Selected Page");
+            Console.WriteLine($"Selected Page: {currentPageNumber}");
             rowNumber++;
             secondPage.ForEach(
                 row => {
@@ -309,6 +325,15 @@ namespace EmulatorMS6502 {
                     rowNumber++;
                 }
             );
+        }
+
+        private void ClearBottom() {
+            Console.SetCursorPosition(0, infoBarYPosition - 1);
+
+            var tmp = new String(' ', 90);
+            for (int i = 0; i < 3; i++) {
+                Console.Write(tmp + "\n");
+            }
         }
 
         private void WriteRegisters(List<String> currentInstructions = null) {
@@ -336,7 +361,6 @@ namespace EmulatorMS6502 {
                 Console.Write(x);
                 rowNumber++;
             });
-
         }
 
         private void WriteInfoBar() {
