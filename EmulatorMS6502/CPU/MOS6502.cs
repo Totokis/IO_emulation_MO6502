@@ -230,6 +230,8 @@ namespace EmulatorMOS6502.CPU {
                 Bus.Instance.WriteToBus(localAddress,instruction);
                 localAddress++;
             }
+
+            programCounter = specyficAddress;
         }
         /*
         public void PrintInfo()
