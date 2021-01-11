@@ -1,6 +1,7 @@
 ﻿using EmulatorMS6502;
 using System;
 using System.Collections.Generic;
+using System.IO.Pipes;
 using System.Linq;
 using System.Text;
 
@@ -198,9 +199,7 @@ namespace EmulatorMOS6502.CPU {
 
         #endregion
 
-
-
-
+        
         #region operation codes
 
         #endregion
@@ -210,8 +209,8 @@ namespace EmulatorMOS6502.CPU {
         {
             foreach (var instruction in bytes)
             {
-                programCounter++;
                 bus.WriteToBus(programCounter, instruction);
+                programCounter++;
             }
             programCounter = 0x0000;
         }
@@ -229,11 +228,16 @@ namespace EmulatorMOS6502.CPU {
         public void PrintInfo()
         {
             string ramInfo = "";
-
-            foreach (var cell in bus.Ram)
+            int startRange = programCounter;
+            int endRange = programCounter + 50;
+            for (int i = programCounter; i < endRange;i++)
             {
-                ramInfo += cell + " ";
+                ramInfo += bus.Ram[i] + " ";
             }
+            // foreach (var cell in bus.Ram)
+            // {
+            //     ramInfo += cell + " ";
+            // }
             
             string info = $"Register A: {a} \n" +
                           $"Register X: {x} \n" +
@@ -246,9 +250,112 @@ namespace EmulatorMOS6502.CPU {
             Console.WriteLine(info);
         }
 
-        public void ExecuteClockCycle()
+        public void ExecuteNormalClockCycle()
         {
             Clock();
+        }
+        public void ExecuteSpecialDebugClockCycle(DissassemblyInstruction instruction)
+        {
+            if (cycles == 0) {
+                opcode = ReadFromBus(programCounter);
+                cycles = lookup[opcode].Cycles;
+                programCounter++;
+                
+                Console.WriteLine($"--Wczytany opcode {lookup[opcode].Name}, addressing mode: {lookup[opcode].AdressingMode.Method.Name}");
+                instruction.SetOpcodeName(lookup[opcode].Name);
+                instruction.SetAdressingModeName(lookup[opcode].AdressingMode.Method.Name);
+                instruction.SetArgument(GetArgument());
+                
+                if (lookup[opcode].AdressingMode())
+                {
+                    cycles++;
+                }
+                if (lookup[opcode].Opcode())
+                {
+                    cycles++;
+                }
+            }
+            cycles--;
+        }
+
+        private string GetArgument()
+        {
+            string name = lookup[opcode].AdressingMode.Method.Name;
+
+            switch (name)
+            {
+                case "IMP":
+                    return a.ToString();
+                case "IND":
+                    UInt16 lowTmpAddr = ReadFromBus(programCounter);
+                    programCounter++;
+                    UInt16 highTmpAddr = ReadFromBus(programCounter);
+                    UInt16 tmpAddr = (UInt16) ((highTmpAddr << 8) | lowTmpAddr);
+                    programCounter--;
+                    return tmpAddr.ToString();
+                case "IZX":
+                    UInt16 zpAddr = ReadFromBus(programCounter);
+                    return zpAddr.ToString();
+                case "ZPY":
+                    return ReadFromBus(programCounter).ToString();
+                case "ZPX":
+                    return ReadFromBus(programCounter).ToString();
+                case "ZP0":
+                    return ReadFromBus(programCounter).ToString();
+                case "ABY":
+                    UInt16 lowByte = (Byte) ReadFromBus(programCounter);
+                    programCounter++;
+                    UInt16 highByte = (Byte) ReadFromBus(programCounter);
+                    programCounter--;
+                    return ((highByte << 8) | lowByte).ToString();
+                case "ABX":
+                    UInt16 lowByte2 = (Byte) ReadFromBus(programCounter);
+                    programCounter++;
+                    UInt16 highByte2 = (Byte) ReadFromBus(programCounter);
+                    programCounter--;
+                    return ((highByte2 << 8) | lowByte2).ToString();
+                case "REL":
+                    return ReadFromBus(programCounter).ToString();
+                case "IZY":
+                    UInt16 value = ReadFromBus(programCounter);
+                    programCounter++;
+                    UInt16 right = ReadFromBus((UInt16) (value & 0x00FF));
+                    UInt16 left = ReadFromBus((UInt16) ((value + 1) & 0x00FF));
+                    left = (UInt16) (left << 8);
+                    programCounter--;
+                    return (left | right).ToString();
+                case "IMM":
+                    //Console.WriteLine($"Ram -> [{bus.Ram[programCounter-1]}] [{bus.Ram[programCounter]}] [{bus.Ram[programCounter+1]}]");
+                    return bus.Ram[programCounter].ToString();
+                case "ABS":
+                    UInt16 right2 = ReadFromBus(programCounter);
+                    programCounter++;
+                    UInt16 left2 = ReadFromBus(programCounter);
+                    left2 = (UInt16) (left2 << 8);
+                    programCounter--;
+                    return (left2 | right2).ToString();
+            }
+            return "Error";
+        }
+
+        public int GetCurrentCycle()
+        {
+            return cycles;
+        }
+
+        public void Clear()
+        {
+            a = 0x00; 
+            x = 0x00;
+            y = 0x00;
+            stackPointer = 0x00;
+            programCounter = 0x0000;
+            statusRegister = 0x00; 
+            cycles = 0; 
+            absAddress = 0x0000;
+            relAddress = 0x00;
+            fetched = 0x00;
+            opcode = 0x00;
         }
     }
 }

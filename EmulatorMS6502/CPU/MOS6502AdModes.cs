@@ -24,7 +24,7 @@ namespace EmulatorMOS6502.CPU {
             // input w ALU - czyli w jednostce arytmetyczno-logicznej, 
             // która wykonuje operacje arytmetyczne) do akumulatora czyli 
             // rejestru które przechowywuje wyniki operacji ALU
-            Console.WriteLine("--SIEMANO--");
+            //Console.WriteLine("--SIEMANO--");
             fetched = a;
             return false;
         }
