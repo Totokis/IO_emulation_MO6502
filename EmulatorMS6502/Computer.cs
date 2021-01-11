@@ -58,7 +58,7 @@ namespace EmulatorMS6502
             while (true)
             {
                 this.mos6502.ExecuteNormalClockCycle();
-                //Computer.Visualisation.Instance.ShowState();
+                Visualisation.Instance.ShowState();
                 Console.WriteLine("--------------------");
                 this.mos6502.PrintInfo();
                 Console.ReadKey();
@@ -251,8 +251,9 @@ namespace EmulatorMS6502
             public void ShowState() {
                 Console.Title = "MOS6502";
                 Console.CursorVisible = false;
-                Console.SetWindowSize(100, 40);
-                Console.BackgroundColor = ConsoleColor.Blue;
+               if(Environment.OSVersion.Platform!=System.PlatformID.Unix)
+                    Console.SetWindowSize(100, 40);
+               Console.BackgroundColor = ConsoleColor.Blue;
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.White;
 
@@ -263,7 +264,7 @@ namespace EmulatorMS6502
                 for(int i = 0; i < 256; i++) {
                     string tmp = "";
                     for(int j = 0; j < 16; j++) {
-                        tmp += $"{Bus.Instance.Ram[i]} ";
+                        tmp += $"{Bus.Instance.Ram[i].ToString("X2")} ";//hexowe wyświetlanie liczb,
                         i++;
                     }
                     zeroPage.Add(tmp);
