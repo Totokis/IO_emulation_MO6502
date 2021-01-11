@@ -43,7 +43,10 @@ namespace EmulatorMS6502 {
             while(true) {
                 Visualisation.Instance.ShowState();
                 this.mos6502.ExecuteNormalClockCycle();
-
+                //Computer.Visualisation.Instance.ShowState();
+                Console.WriteLine("--------------------");
+                this.mos6502.PrintInfo();
+                Console.ReadKey();
             }
         }
 
@@ -224,26 +227,27 @@ namespace EmulatorMS6502 {
             cpu = cpuInstance;
         }
 
-        public void ShowState() {
-            Console.Title = "MOS6502";
-            Console.CursorVisible = false;
-            Console.SetWindowSize(100, 40);
-            Console.BackgroundColor = ConsoleColor.Blue;
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.White;
+            public void ShowState() {
+                Console.Title = "MOS6502";
+                Console.CursorVisible = false;
+               if(Environment.OSVersion.Platform!=System.PlatformID.Unix)
+                    Console.SetWindowSize(100, 40);
+               Console.BackgroundColor = ConsoleColor.Blue;
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.White;
 
             var zeroPage = new List<string>();
             var anotherPage = new List<string>();
 
-
-            for(int i = 0; i < 256; i++) {
-                string tmp = "";
-                for(int j = 0; j < 16; j++) {
-                    tmp += $"{Bus.Instance.Ram[i]} ";
-                    i++;
+                
+                for(int i = 0; i < 256; i++) {
+                    string tmp = "";
+                    for(int j = 0; j < 16; j++) {
+                        tmp += $"{Bus.Instance.Ram[i].ToString("X2")} ";//hexowe wyświetlanie liczb,
+                        i++;
+                    }
+                    zeroPage.Add(tmp);
                 }
-                zeroPage.Add(tmp);
-            }
 
             for(int i = 0; i < 16; i++) {
                 string tmp = "";
