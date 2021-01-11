@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using EmulatorMOS6502.CPU;
 
@@ -42,11 +44,11 @@ namespace EmulatorMS6502 {
         private void Run() {
             while(true) {
                 Visualisation.Instance.ShowState();
+                Console.ReadKey();
                 this.mos6502.ExecuteNormalClockCycle();
                 //Computer.Visualisation.Instance.ShowState();
                 Console.WriteLine("--------------------");
-                this.mos6502.PrintInfo();
-                Console.ReadKey();
+                //this.mos6502.PrintInfo();
             }
         }
 
@@ -177,6 +179,22 @@ namespace EmulatorMS6502 {
             Run();
             return translatedInstructions;
         }
+        public List<string> ReadProgramAndRun()
+        {
+            var bytes = Computer.Instance.LoadInstructions();
+            List<string> translatedInstructions = dissassembler.TranslateToHuman(bytes);
+            LoadProgramIntoMemory(bytes,0x4000);
+            Console.ReadKey();
+            Run();
+            return translatedInstructions;
+        }
+
+        private List<byte> LoadInstructions()
+        {
+            byte[] bytes = File.ReadAllBytes("//Users//pawel//Dropbox//Sem5//Inżynieria Oprogramowania//Emulator//IO_emulation_MO6502//EmulatorMS6502//6502Tests//AllSuiteA.bin");
+
+            return bytes.ToList();
+        }
 
         public void initComputer(int ramCapacity) {
             this.bus = new Bus(ramCapacity);
@@ -239,8 +257,8 @@ namespace EmulatorMS6502 {
             var zeroPage = new List<string>();
             var anotherPage = new List<string>();
 
-                
-                for(int i = 0; i < 256; i++) {
+            
+                for(int i = 0x0210; i < (0x0210) + 256; i++) {
                     string tmp = "";
                     for(int j = 0; j < 16; j++) {
                         tmp += $"{Bus.Instance.Ram[i].ToString("X2")} ";//hexowe wyświetlanie liczb,
@@ -275,6 +293,10 @@ namespace EmulatorMS6502 {
                     break;
                 case ConsoleKey.R:
                     Bus.Instance.Ram = new byte[256 * 256];
+                    break;
+                case ConsoleKey.L:
+                    Console.Write("Wczytuję program testowy:\n");
+                    instructionsInHuman = Computer.Instance.ReadProgramAndRun();
                     break;
                 default:
                     Console.WriteLine("Do Nothing");
