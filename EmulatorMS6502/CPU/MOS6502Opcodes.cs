@@ -660,7 +660,7 @@ namespace EmulatorMOS6502.CPU {
 			Fetch();
 			y = fetched;
 			setFlag('Z', a == 0x00);
-			setFlag('N', (a & 0x80) == 0);
+			setFlag('N', Convert.ToBoolean(a & 0x80));
 			return true;
 		}
 
@@ -790,7 +790,7 @@ namespace EmulatorMOS6502.CPU {
 
 			setFlag('C', (tmp & 0xFF00) > 0);
 			setFlag('Z', (tmp & 0x00FF) == 0x00);
-			setFlag('N', Convert.ToBoolean(tmp & 0x80)); //nie jestem pewien
+			setFlag('N', Convert.ToBoolean(tmp & 0x80)); //nie jestem pewien, ale ja jestem poprzednia osobo pisząca komentarz :)
 			if (lookup[opcode].AdressingMode == IMP)
 				a = (byte) (tmp & 0x00FF);
 			else
@@ -836,7 +836,7 @@ namespace EmulatorMOS6502.CPU {
 		{
 			y--;
 			setFlag('Z',y==0x00);
-			setFlag('N',(y & 0x80)==1);
+			setFlag('N', Convert.ToBoolean(y & 0x80));
 			return false;
 		}
 
@@ -844,7 +844,7 @@ namespace EmulatorMOS6502.CPU {
 		{
 			y++;
 			setFlag('Z',y==0x00);
-			setFlag('N',(y & 0x80)==1);
+			setFlag('N', Convert.ToBoolean(y & 0x80));
 			return false;
 		}
 
@@ -853,7 +853,7 @@ namespace EmulatorMOS6502.CPU {
 			Fetch();
 			x = fetched;
 			setFlag('Z',x == 0x00);
-			setFlag('N',(x & 0x80)==1);
+			setFlag('N', Convert.ToBoolean(x & 0x80));
 			return true;
 		}
 
@@ -862,7 +862,7 @@ namespace EmulatorMOS6502.CPU {
 			Fetch();
 			a = (byte) (a | fetched);
 			setFlag('Z',a==0x00);
-			setFlag('N',(a & 0x80)==1);
+			setFlag('N', Convert.ToBoolean(a & 0x80));
 			return false;
 		}
 
@@ -894,7 +894,7 @@ namespace EmulatorMOS6502.CPU {
 		{
 			x = a;
 			setFlag('Z',x==0x00);
-			setFlag('N', (x & 0x80)==1);
+			setFlag('N', Convert.ToBoolean(x & 0x80));
 			return false;
 		}
 
