@@ -102,7 +102,11 @@ namespace EmulatorMOS6502.CPU {
 
 
         void Clock() {
-            if (cycles == 0) {
+            if (programCounter == 0xDBAB)
+            {
+                var a = 0;
+            }
+                if (cycles == 0) {
                 //wczytujemy instrukcje
                 opcode = ReadFromBus(programCounter);
                 //Console.WriteLine($"--Wczytany opcode {lookup[opcode].Name}");
