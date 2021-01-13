@@ -67,8 +67,8 @@ namespace EmulatorMS6502
             while(true)//(_mos6502.ProgramCounter!=0x45C0)
             {
                 _mos6502.ExecuteNormalClockCycle();
-                Visualisation.Instance.WriteRegisters();
-                Thread.Sleep(10);
+                Visualisation.Instance.WriteAll();
+                Thread.Sleep(15);
             }
         }
 
