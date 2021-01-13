@@ -46,7 +46,7 @@ namespace EmulatorMOS6502.CPU {
             // Czytanie następnego bajtu (dalszej części adresu z pod wskaźnika)
             programCounter++;
             UInt16 highTmpAddr = ReadFromBus(programCounter);
-
+            programCounter++;
             // Składanie wartości wskaźnika w całość
             // Do low i high zostały zwrócone bajty ale do 16 bitowej zmiennej więc wyglądają mniej więcej tak:
             // np: low = 0000 0000 1001 1011, high = 0000 0000 1010 0011
@@ -58,9 +58,20 @@ namespace EmulatorMOS6502.CPU {
             // lokalizacja już z danymi do wyciągnięcia (zapisane w fromie low , high)
             // Zczytujemy High byte ( adres + 1 ) po czym przesuwając go o 8 w lewo tworzymy 1010 1011 0000 0000
             // i następnie dołączamy Low byte z pierwszego miejsca ( adres ) używając bitowego Or
-            absAddress = (UInt16)(ReadFromBus((UInt16)(tmpAddr + 1)) << 8 | ReadFromBus(tmpAddr));
+            // okazuje się że nasz test nie przechodzi ze względu na bycia kompatybilnym z bugiem procesora
+            // więc musimy ten bug zimitować aby test przeszedł
+            // Bug polega na zawijaniu się strony z powrotem zamiast poprawnym zmieniem i pobraniem natępnej cześci adresu z nastepnej strony
+            // zamiast tego pobiera go z początku tej samej
+            if (lowTmpAddr == 0x00ff)
+            {
+                absAddress = (UInt16)(ReadFromBus((UInt16)(tmpAddr & 0xff00)) << 8 | ReadFromBus(tmpAddr));
+            }
+            else
+            {
+                absAddress = (UInt16)(ReadFromBus((UInt16)(tmpAddr + 1)) << 8 | ReadFromBus(tmpAddr));
+            }
+            
 
-            programCounter++;
             return false;
         }
 

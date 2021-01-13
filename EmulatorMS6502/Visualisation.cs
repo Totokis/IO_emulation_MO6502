@@ -145,6 +145,20 @@ namespace EmulatorMS6502
                 case ConsoleKey.O:
                     WriteAll();
                     break;
+                case ConsoleKey.LeftArrow:
+                    if (currentPageNumber > 0)
+                    {
+                        currentPageNumber--;
+                        WriteAll();
+                    }
+                    break;
+                case ConsoleKey.RightArrow:
+                    if (currentPageNumber < 0xff)
+                    {
+                        currentPageNumber++;
+                        WriteAll();
+                    }
+                    break;
                 default:
                     Console.WriteLine("Do Nothing");
                     break;

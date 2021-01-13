@@ -64,12 +64,19 @@ namespace EmulatorMS6502
 
         public void RunEntireProgram()
         {
-            while(true)//(_mos6502.ProgramCounter!=0x45C0)
+            ConsoleKeyInfo halt = new ConsoleKeyInfo();
+            do
             {
-                _mos6502.ExecuteNormalClockCycle();
-                Visualisation.Instance.WriteRegisters();
-                Thread.Sleep(10);
-            }
+                while (Console.KeyAvailable == false)//(_mos6502.ProgramCounter!=0x45C0)
+                {
+                    _mos6502.ExecuteNormalClockCycle();
+                    Visualisation.Instance.WriteRegisters();
+                    Thread.Sleep(10);
+                }
+                halt = Console.ReadKey(true);
+
+            } while (halt.Key != ConsoleKey.H);
+  
         }
 
         public void LoadProgramIntoMemory(UInt16 specyficAddress = 0x0200)
@@ -97,8 +104,8 @@ namespace EmulatorMS6502
         private List<byte> LoadInstructionsFromPath()
         {
             var bytes = File.ReadAllBytes(
-                "//Users//pawel//Dropbox//Sem5//Inżynieria Oprogramowania//Emulator//IO_emulation_MO6502//EmulatorMS6502//6502Tests//nestest.nes");
-
+                "C:\\Users\\njana\\source\\repos\\Nowy folder\\IO_emulation_MO6502\\EmulatorMS6502\\6502Tests\\nestest.nes");
+            //"//Users//pawel//Dropbox//Sem5//Inżynieria Oprogramowania//Emulator//IO_emulation_MO6502//EmulatorMS6502//6502Tests//nestest.nes");
             return bytes.ToList();
         }
     }
