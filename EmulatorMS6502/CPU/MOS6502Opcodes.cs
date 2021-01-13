@@ -412,10 +412,10 @@ namespace EmulatorMOS6502.CPU {
 			programCounter--;
 
 			UInt16 left8bitsOfProgramCounter = (UInt16) (programCounter >> 8);
-			WriteToBus((UInt16) (0x0100 + stackPointer), (UInt8) (left8bitsOfProgramCounter & 0x00FF));
+			Bus.Instance.WriteToBus((UInt16) (0x0100 + stackPointer), (UInt8) (left8bitsOfProgramCounter & 0x00FF));
 			stackPointer -= 1;
 
-			WriteToBus((UInt16) (0x0100 + stackPointer + 1), (UInt8) (programCounter & 0x00FF));
+			Bus.Instance.WriteToBus((UInt16) (0x0100 + stackPointer), (UInt8) (programCounter & 0x00FF));
 			stackPointer -= 1;
 
 			programCounter = absAddress;
