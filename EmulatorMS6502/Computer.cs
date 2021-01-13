@@ -59,6 +59,7 @@ namespace EmulatorMS6502
         public void RunProgramInSteps()
         {
             _mos6502.ExecuteNormalClockCycle();
+            Visualisation.Instance.WriteRegisters();
         }
 
         public void RunEntireProgram()

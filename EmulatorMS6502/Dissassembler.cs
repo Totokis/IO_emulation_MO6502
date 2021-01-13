@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using EmulatorMOS6502.CPU;
 
 namespace EmulatorMS6502
@@ -6,17 +7,11 @@ namespace EmulatorMS6502
     public class Dissassembler
     {
         private MOS6502 _mos6502;
-        public Dissassembler(MOS6502 mos6502)
+        private Computer _computer;
+        public Dissassembler(Computer computer)
         {
-            this._mos6502 = mos6502;
+            _computer = computer;
         }
-        public List<string> TranslateToHuman(List<byte> bytes)
-        {
-            int maxProgramLength = bytes.Capacity;
-            _mos6502.InjectInstructions(bytes);
-            return ExecuteInjectedProgramAndGenerateInstructions(maxProgramLength);
-        }
-
         private List<string> ExecuteInjectedProgramAndGenerateInstructions(int maxProgramLength)
         {
             List<string> listOfDissassembledInstructions = new List<string>();
@@ -34,10 +29,18 @@ namespace EmulatorMS6502
             }
             return listOfDissassembledInstructions;
         }
-
-        public void Clear()
+        public List<string> GetInstructions()
         {
-            _mos6502.Clear();
+            var instructions = _computer.Instructions;
+            int maxProgramLength = instructions.Capacity;
+            Bus bus = new Bus();
+            bus.setRamCapacity(256*256);//programy dla dissassemblera i tak służą nam tylko na pokaz, więc wykonywane będą
+            //na maksymalnym rozmiarze pamięci
+            _mos6502 = new MOS6502(bus);
+            _mos6502.InjectInstructions(instructions);
+            _mos6502.Reset();
+            //return ExecuteInjectedProgramAndGenerateInstructions();
+            return ExecuteInjectedProgramAndGenerateInstructions(maxProgramLength);
         }
     }
 }

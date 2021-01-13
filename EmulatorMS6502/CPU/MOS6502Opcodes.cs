@@ -339,6 +339,7 @@ namespace EmulatorMOS6502.CPU {
 		{
 			if (getFlag('V') == 1)
 			{
+				cycles++;
 				absAddress = (UInt16) (programCounter + relAddress);
 
 				//przekroczenie "page boundary" skutkuje zużyciem dodatkowego cyklu
@@ -348,8 +349,6 @@ namespace EmulatorMOS6502.CPU {
 				}
 
 				programCounter = absAddress;
-
-				cycles++;
 			}
 
 			return false;
@@ -640,7 +639,7 @@ namespace EmulatorMOS6502.CPU {
 			Fetch();
 			a = (Byte) (a ^ fetched);
 			setFlag('Z', a == 0x00);
-			setFlag('N', (a & 0x80) == 0);
+			setFlag('N', Convert.ToBoolean(a & 0x80));
 			return true;
 		}
 
@@ -701,7 +700,7 @@ namespace EmulatorMOS6502.CPU {
 		/// </summary>
 		bool STA()
 		{
-			WriteToBus(absAddress, x);
+			WriteToBus(absAddress, a);
 			return false;
 		}
 
@@ -791,7 +790,7 @@ namespace EmulatorMOS6502.CPU {
 
 			setFlag('C', (tmp & 0xFF00) > 0);
 			setFlag('Z', (tmp & 0x00FF) == 0x00);
-			setFlag('N', (tmp & 0x80) == 1); //nie jestem pewien
+			setFlag('N', Convert.ToBoolean(tmp & 0x80)); //nie jestem pewien
 			if (lookup[opcode].AdressingMode == IMP)
 				a = (byte) (tmp & 0x00FF);
 			else
@@ -803,9 +802,9 @@ namespace EmulatorMOS6502.CPU {
 		{
 			Fetch();
 			var tmp = a & fetched;
-			setFlag('Z',(tmp & 0x00FF)==0x00);
-			setFlag('N',(fetched & (1 << 7))==1);
-			setFlag('V',(fetched & (1<<6))==1);
+			setFlag('Z',(tmp & 0x00FF)== 0x00);
+			setFlag('N',Convert.ToBoolean(fetched & (1 << 7)));
+			setFlag('V',Convert.ToBoolean(fetched & (1 << 6)));//01000000
 			return false;
 		}
 

@@ -11,6 +11,7 @@ namespace EmulatorMOS6502.CPU {
         Bus bus = null;
         int cycles = 0; // zmienna na liczbę cykli
 
+        public int FinishedCycles = 0;
         // Trzyma miejsce w pamięci z którego obecnie odczytujemy
         UInt16 absAddress = 0x0000;
         //offset dla skoku który jest wykonywany dzięki specjalnym opcodes np JMP
@@ -49,9 +50,12 @@ namespace EmulatorMOS6502.CPU {
         public Byte A { get { return a; } } 
         public Byte X { get { return x; } } 
         public Byte Y { get { return y; } } 
-        public Byte StackPointer { get { return  stackPointer; } } 
-        public Byte ProgramCounter { get { return Convert.ToByte(0); } } // return ProgramCounter; wywala błąd
-        public Byte StatusRegister { get { return statusRegister; } } 
+        public Byte StackPointer { get { return  stackPointer; } }
+        public UInt16 ProgramCounter => programCounter;
+        public Byte StatusRegister { get { return statusRegister; } }
+        public string RamSize => (Bus.Instance.Ram.Length/1024) + " kB";
+        public string CurrentOpcodeName => lookup[opcode].Name;
+        public UInt16 AbsoluteAddress => absAddress;
 
         #endregion
 
@@ -70,6 +74,10 @@ namespace EmulatorMOS6502.CPU {
         /// </summary>
         /// <param name="parametr">Target value of flag </param>
         void setFlag(char flagChar, bool parametr) {
+            if (flagChar == 'V') //for debugg only
+            {
+                var a = 0;
+            }
             if (parametr) {
                 // |= to poprostu bitwise or
                 statusRegister |= Flag[flagChar];
@@ -95,13 +103,17 @@ namespace EmulatorMOS6502.CPU {
 
         void Clock() {
             if (cycles == 0) {
-                //zczytujemy instrukcje
+                //wczytujemy instrukcje
                 opcode = ReadFromBus(programCounter);
                 //Console.WriteLine($"--Wczytany opcode {lookup[opcode].Name}");
                 //zbieramy ilość cykli które trzeba wykonać
                 cycles = lookup[opcode].Cycles;
                 programCounter++;
                 //wykonujemy tryb adresowania, jeśli zwraca true, to oznacza, że wymaga on dodatkowy cykl na wykonanie
+                if (lookup[opcode].Name == "BVS")
+                {
+                    var a = getFlag('V');
+                }
                 if (lookup[opcode].AdressingMode())
                 {
                     cycles++;//dodaje plus jeden
@@ -111,11 +123,12 @@ namespace EmulatorMOS6502.CPU {
                 {
                     cycles++;//dodaje plus jeden 
                 }
+                FinishedCycles += cycles;
             }
             cycles--;
         }
 
-        void Reset() {
+        public void Reset() {
 
             //vector $FFFC/$FFFD dla resetu
             absAddress = 0xFFFC;
@@ -210,28 +223,32 @@ namespace EmulatorMOS6502.CPU {
         #region operation codes
 
         #endregion
-
-
-        public void InjectInstructions(List<byte> bytes)
-        {
-            foreach (var instruction in bytes)
-            {
-                programCounter++;
-                Bus.Instance.WriteToBus(programCounter, instruction);
-            }
-            programCounter = 0x0000;
-        }
-
-        public void InjectInstructionsAtSpecyficAddress(List<byte> bytes, ushort specyficAddress)
+        
+        public void InjectInstructions(List<byte> bytes, UInt16 specyficAddress=0x0200)
         {
             ushort localAddress = specyficAddress;
-            foreach (var instruction in bytes)
+            for (int i = 16; i < bytes.Capacity; i++)//skips the header file i .nes format
             {
-                Bus.Instance.WriteToBus(localAddress,instruction);
+                if (localAddress == 0xFFFF)
+                    break;
+                Bus.Instance.WriteToBus(localAddress,bytes[i]);
                 localAddress++;
             }
 
-            programCounter = specyficAddress;
+            programCounter = 0xC000;
+            var a = Bus.Instance.ReadFromBus(0xFFFD);
+            var b = Bus.Instance.ReadFromBus(0xFFFE);
+            // foreach (var instruction in bytes)
+            // {
+            //     if (localAddress == 0xFFFF)
+            //         break;
+            //     Bus.Instance.WriteToBus(localAddress,instruction);
+            //     localAddress++;
+            // }
+
+            // Bus.Instance.WriteToBus(0xFFFC, 0x00);
+            // Bus.Instance.WriteToBus(0xFFFD, 0x40);
+
         }
         /*
         public void PrintInfo()
@@ -265,6 +282,7 @@ namespace EmulatorMOS6502.CPU {
         }
         public void ExecuteSpecialDebugClockCycle(DissassemblyInstruction instruction)
         {
+            //TODO finishedCycles
             if (cycles == 0) {
                 opcode = ReadFromBus(programCounter);
                 cycles = lookup[opcode].Cycles;
@@ -284,6 +302,7 @@ namespace EmulatorMOS6502.CPU {
                     cycles++;
                 }
             }
+            
             cycles--;
         }
 
@@ -335,7 +354,7 @@ namespace EmulatorMOS6502.CPU {
                     return (left | right).ToString();
                 case "IMM":
                     //Console.WriteLine($"Ram -> [{bus.Ram[programCounter-1]}] [{bus.Ram[programCounter]}] [{bus.Ram[programCounter+1]}]");
-                    return bus.Ram[programCounter].ToString();
+                    return ReadFromBus(programCounter).ToString();
                 case "ABS":
                     UInt16 right2 = ReadFromBus(programCounter);
                     programCounter++;
@@ -350,21 +369,6 @@ namespace EmulatorMOS6502.CPU {
         public int GetCurrentCycle()
         {
             return cycles;
-        }
-
-        public void Clear()
-        {
-            a = 0x00; 
-            x = 0x00;
-            y = 0x00;
-            stackPointer = 0x00;
-            programCounter = 0x0000;
-            statusRegister = 0x00; 
-            cycles = 0; 
-            absAddress = 0x0000;
-            relAddress = 0x00;
-            fetched = 0x00;
-            opcode = 0x00;
         }
     }
 }

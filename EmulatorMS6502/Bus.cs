@@ -7,8 +7,8 @@ namespace EmulatorMS6502 {
     public class Bus {
         #region Devices on Bus
         MOS6502 cpu;
-        MOS6502 Cpu { get; set; }
-        public Byte[] Ram = new byte[1024];
+        private Byte[] _ram = new byte[1024];
+        public Byte[] Ram => _ram;
 
         private static Bus instance = null;
         private static readonly object compPadlock = new object();
@@ -23,6 +23,7 @@ namespace EmulatorMS6502 {
                 }
             }
         }
+        
 
         #endregion
 
@@ -30,18 +31,18 @@ namespace EmulatorMS6502 {
 
         #region Bus functionality 
         public void WriteToBus(UInt16 address, Byte data) {
-            Ram[address] = data;
+            _ram[address] = data;
         }
 
         public Byte ReadFromBus(UInt16 address, bool isReadOnly = false) //TODO Jak nie użyte to wywalić isReadOnly
         {
             //Console.WriteLine("RAM data: "+ Ram[address]);
-            return Ram[address];
+            return _ram[address];
         }
 
         public Bus(int ramCapacity)
         {
-            Ram = new byte[ramCapacity];
+            _ram = new byte[ramCapacity];
         }
 
         public Bus()
@@ -50,7 +51,7 @@ namespace EmulatorMS6502 {
         }
 
         public void setRamCapacity(int ramCapacity) {
-            Ram = new byte[ramCapacity];
+            _ram = new byte[ramCapacity];
         }
 
         #endregion
