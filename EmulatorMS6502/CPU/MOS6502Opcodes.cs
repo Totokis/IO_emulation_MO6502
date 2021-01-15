@@ -456,7 +456,7 @@ namespace EmulatorMOS6502.CPU {
 		bool PHP()
 		{
 			//zapisujemy statusRegister
-			WriteToBus((UInt16) (0x0100 + stackPointer), (UInt8) (statusRegister | getFlag('B') | getFlag('U')));
+			WriteToBus((UInt16) (0x0100 + stackPointer), (UInt8) (statusRegister | (1<<4) | (1<<5)));
 			stackPointer--;
 
 			//resetujemy obie flagi
