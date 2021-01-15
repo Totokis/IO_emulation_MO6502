@@ -6,7 +6,7 @@ using System.Text;
 // OPCODE
 namespace EmulatorMOS6502.CPU {
 	using UInt8 = Byte;
-//
+
 	public partial class MOS6502
 	{
 		//Tu implementujemy wszystkie opcody
@@ -456,7 +456,7 @@ namespace EmulatorMOS6502.CPU {
 		bool PHP()
 		{
 			//zapisujemy statusRegister
-			WriteToBus((UInt16) (0x0100 + stackPointer), (UInt8) (statusRegister | getFlag('B') | getFlag('U')));
+			WriteToBus((UInt16) (0x0100 + stackPointer), (UInt8) (statusRegister | (1<<4) | (1<<5)));
 			stackPointer--;
 
 			//resetujemy obie flagi
@@ -659,8 +659,8 @@ namespace EmulatorMOS6502.CPU {
 		{
 			Fetch();
 			y = fetched;
-			setFlag('Z', a == 0x00);
-			setFlag('N', Convert.ToBoolean(a & 0x80));
+			setFlag('Z', y == 0x00);
+			setFlag('N', Convert.ToBoolean(y & 0x80));
 			return true;
 		}
 
