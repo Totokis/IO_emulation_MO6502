@@ -659,8 +659,8 @@ namespace EmulatorMOS6502.CPU {
 		{
 			Fetch();
 			y = fetched;
-			setFlag('Z', a == 0x00);
-			setFlag('N', Convert.ToBoolean(a & 0x80));
+			setFlag('Z', y == 0x00);
+			setFlag('N', Convert.ToBoolean(y & 0x80));
 			return true;
 		}
 

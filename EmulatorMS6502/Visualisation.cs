@@ -129,7 +129,7 @@ namespace EmulatorMS6502
                     Console.Write("Wczytuję program testowy:\n");
                     Computer.Instance.LoadInstructionsFromFile();
                     //instructionsInHuman = Computer.Instance.Dissassembler.GetInstructions();
-                    Computer.Instance.LoadProgramIntoMemory(0xC000);
+                    Computer.Instance.LoadProgramIntoMemory(0x4000);
                     break;
                 case ConsoleKey.P:
                     Console.Write("Wprowadz numer strony którą chcesz wyswietlić:\n");
@@ -213,10 +213,9 @@ namespace EmulatorMS6502
             var rowNumber = registersYPosition;
 
             var list = new List<string>();
-            list.Add("$02: (Check failure code) :" + Bus.Instance.ReadFromBus(0x002) + $"[{Bus.Instance.ReadFromBus(0x002).ToString("X2")}]");
-            list.Add("$03: (Check failure code) :" + Bus.Instance.ReadFromBus(0x003) + $"[{Bus.Instance.ReadFromBus(0x003).ToString("X2")}]");
-            //list.Add("$0210: (Check failure code) :" + Bus.Instance.ReadFromBus(0x0210) + $"[{Bus.Instance.ReadFromBus(0x0210).ToString("X2")}]");
-            
+            list.Add("$0210: (Check failure code) :" + Bus.Instance.ReadFromBus(0x0210) + $"[{Bus.Instance.ReadFromBus(0x0210).ToString("X2")}]");
+            list.Add("$80:  " + Bus.Instance.ReadFromBus(0x0080) + $"[{Bus.Instance.ReadFromBus(0x0080).ToString("X2")}]");
+
             list.Add("Ram size: " + cpu.RamSize);
             list.Add($"Flags:               {Convert.ToString(cpu.StatusRegister,2)}");//N V - B D I Z C");
             list.Add($"Current Instruction: {cpu.CurrentOpcodeName}"); //{cpu.loo");

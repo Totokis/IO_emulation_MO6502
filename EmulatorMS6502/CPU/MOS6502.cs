@@ -102,32 +102,28 @@ namespace EmulatorMOS6502.CPU {
 
 
         void Clock() {
-            if (programCounter == 0xDBAB)
+            if (programCounter == 0x45c0)
             {
-                var a = 0;
+                var dd = 0;
             }
-                if (cycles == 0) {
-                //wczytujemy instrukcje
-                opcode = ReadFromBus(programCounter);
-                //Console.WriteLine($"--Wczytany opcode {lookup[opcode].Name}");
-                //zbieramy ilość cykli które trzeba wykonać
-                cycles = lookup[opcode].Cycles;
-                programCounter++;
-                //wykonujemy tryb adresowania, jeśli zwraca true, to oznacza, że wymaga on dodatkowy cykl na wykonanie
-                if (lookup[opcode].Name == "BVS")
-                {
-                    var a = getFlag('V');
-                }
-                if (lookup[opcode].AdressingMode())
-                {
-                    cycles++;//dodaje plus jeden
-                }
-                //tak samo jak wyżej tylko Opcode
-                if (lookup[opcode].Opcode())
-                {
-                    cycles++;//dodaje plus jeden 
-                }
-                FinishedCycles += cycles;
+            if (cycles == 0) {
+            //wczytujemy instrukcje
+            opcode = ReadFromBus(programCounter);
+            //Console.WriteLine($"--Wczytany opcode {lookup[opcode].Name}");
+            //zbieramy ilość cykli które trzeba wykonać
+            cycles = lookup[opcode].Cycles;
+            programCounter++;
+            //wykonujemy tryb adresowania, jeśli zwraca true, to oznacza, że wymaga on dodatkowy cykl na wykonanie
+            if (lookup[opcode].AdressingMode())
+            {
+                cycles++;//dodaje plus jeden
+            }
+            //tak samo jak wyżej tylko Opcode
+            if (lookup[opcode].Opcode())
+            {
+                cycles++;//dodaje plus jeden 
+            }
+            FinishedCycles += cycles;
             }
             cycles--;
         }
@@ -224,14 +220,11 @@ namespace EmulatorMOS6502.CPU {
         #endregion
 
         
-        #region operation codes
-
-        #endregion
         
         public void InjectInstructions(List<byte> bytes, UInt16 specyficAddress=0x0200)
         {
             ushort localAddress = specyficAddress;
-            for (int i = 16; i < bytes.Capacity; i++)//skips the header file i .nes format
+            for (int i = 0; i < bytes.Capacity; i++)//skips the header file i .nes format
             {
                 if (localAddress == 0xFFFF)
                     break;
@@ -239,7 +232,7 @@ namespace EmulatorMOS6502.CPU {
                 localAddress++;
             }
 
-            programCounter = 0xC000;
+            programCounter = 0x0600;
             var a = Bus.Instance.ReadFromBus(0xFFFD);
             var b = Bus.Instance.ReadFromBus(0xFFFE);
             // foreach (var instruction in bytes)

@@ -32,6 +32,10 @@ namespace EmulatorMS6502 {
         #region Bus functionality 
         public void WriteToBus(UInt16 address, Byte data) {
             _ram[address] = data;
+            if (address == 0x0002 || address == 0x0004)
+            {
+                var d = 0;
+            }
         }
 
         public Byte ReadFromBus(UInt16 address, bool isReadOnly = false) //TODO Jak nie użyte to wywalić isReadOnly
