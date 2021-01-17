@@ -12,7 +12,6 @@ namespace EmulatorMS6502 {
 
         private static Bus instance = null;
         private static readonly object compPadlock = new object();
-
         public static Bus Instance {
             get {
                 lock(compPadlock) {
@@ -24,19 +23,22 @@ namespace EmulatorMS6502 {
             }
         }
         
-
         #endregion
-
-
-
         #region Bus functionality 
         public void WriteToBus(UInt16 address, Byte data) {
             _ram[address] = data;
+            if (address == 0xf001)
+            {
+                Computer.Instance.CatchOutput();
+            }
         }
 
         public Byte ReadFromBus(UInt16 address, bool isReadOnly = false) //TODO Jak nie użyte to wywalić isReadOnly
         {
-            //Console.WriteLine("RAM data: "+ Ram[address]);
+            if (address == 0xf004)
+            {
+                Computer.Instance.IsWaitingForInput = true;
+            }
             return _ram[address];
         }
 

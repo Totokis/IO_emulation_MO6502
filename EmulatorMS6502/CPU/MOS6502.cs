@@ -42,7 +42,7 @@ namespace EmulatorMOS6502.CPU {
         Byte a = 0x00; //Accumulator Register
         Byte x = 0x00;
         Byte y = 0x00;
-        Byte stackPointer = 0x00;
+        Byte stackPointer = 0xFD;
         UInt16 programCounter = 0x0000;
         //Dzięki temu znamy status flag
         Byte statusRegister = 0x00;
@@ -102,11 +102,7 @@ namespace EmulatorMOS6502.CPU {
 
 
         void Clock() {
-            if (programCounter == 0xDBAB)
-            {
-                var a = 0;
-            }
-                if (cycles == 0) {
+            if (cycles == 0) {
                 //wczytujemy instrukcje
                 opcode = ReadFromBus(programCounter);
                 //Console.WriteLine($"--Wczytany opcode {lookup[opcode].Name}");
@@ -127,7 +123,6 @@ namespace EmulatorMOS6502.CPU {
                 {
                     cycles++;//dodaje plus jeden 
                 }
-                FinishedCycles += cycles;
             }
             cycles--;
         }
@@ -159,7 +154,7 @@ namespace EmulatorMOS6502.CPU {
 
         // IRQ interrupts (interrupt request)
         //wykonuje instrukcje w konkretnej lokacji
-        void IRQ() {
+        public void IRQ() {
             if (getFlag('I') == 0)
             {
                 WriteToBus((UInt16) (0x0100 + stackPointer),(byte)((programCounter >> 8) & 0x00FF));
@@ -185,7 +180,7 @@ namespace EmulatorMOS6502.CPU {
         // NMI interrupts (non-maskable interrupts)
         // Zapisuje stan program counter oraz status register i wpisuje do program counter
         // z programowalnego adresu 0xFFFA oraz 0xFFFB, te przerwania nie mogą być wyłączone
-        void NMI() {
+        public void NMI() {
             // Ilość cykli jakie zajmuje NMI
             cycles = 8;
 
@@ -231,28 +226,22 @@ namespace EmulatorMOS6502.CPU {
         public void InjectInstructions(List<byte> bytes, UInt16 specyficAddress=0x0200)
         {
             ushort localAddress = specyficAddress;
-            for (int i = 16; i < bytes.Capacity; i++)//skips the header file i .nes format
+            for (int i = 0; i < bytes.Capacity; i++)//skips the header file i .nes format
             {
                 if (localAddress == 0xFFFF)
                     break;
+
+                if (localAddress == 0xFFFC)
+                {
+                    var a = 0;
+                }
                 Bus.Instance.WriteToBus(localAddress,bytes[i]);
                 localAddress++;
             }
+            
+            
 
             programCounter = 0xC000;
-            var a = Bus.Instance.ReadFromBus(0xFFFD);
-            var b = Bus.Instance.ReadFromBus(0xFFFE);
-            // foreach (var instruction in bytes)
-            // {
-            //     if (localAddress == 0xFFFF)
-            //         break;
-            //     Bus.Instance.WriteToBus(localAddress,instruction);
-            //     localAddress++;
-            // }
-
-            // Bus.Instance.WriteToBus(0xFFFC, 0x00);
-            // Bus.Instance.WriteToBus(0xFFFD, 0x40);
-
         }
         /*
         public void PrintInfo()
@@ -373,6 +362,14 @@ namespace EmulatorMOS6502.CPU {
         public int GetCurrentCycle()
         {
             return cycles;
+        }
+
+        public void ExecuteInstruction()
+        {
+            while (cycles != 0)
+            {
+                Clock();
+            }
         }
     }
 }

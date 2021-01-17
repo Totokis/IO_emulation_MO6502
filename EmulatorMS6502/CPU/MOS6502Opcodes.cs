@@ -407,7 +407,7 @@ namespace EmulatorMOS6502.CPU {
 		/// </summary>
 		bool JSR()
 		{
-			//zapisuje programCounter do bus'a i wczytuje na niego absolute address
+			//zapisuje programCounter do stack'a i wczytuje na niego absolute address
 
 			programCounter--;
 
@@ -775,7 +775,8 @@ namespace EmulatorMOS6502.CPU {
 		}
 		
 		bool RTS() {
-			stackPointer++;
+			stackPointer++;//255
+			var c = stackPointer;
 			programCounter = (UInt16)ReadFromBus((UInt16)(0x0100 + stackPointer));
 			stackPointer++;
 			programCounter |= Convert.ToUInt16((UInt16)ReadFromBus((UInt16)(0x0100 + stackPointer)) << 8);
