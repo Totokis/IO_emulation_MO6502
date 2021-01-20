@@ -99,7 +99,7 @@ namespace EmulatorMS6502
         public void ShowState()
         {
            if(isWindows)
-                Console.SetWindowSize(100, 40);
+                Console.SetWindowSize(105, 45);
            
             if (isFistTime)
             {
@@ -134,7 +134,9 @@ namespace EmulatorMS6502
                     Computer.Instance.RunProgramInSteps();
                     break;
                 case ConsoleKey.E:
+                    ClearBottom();
                     Computer.Instance.RunEntireProgram();
+
                     break;
                 case ConsoleKey.O:
                     WriteAll();
@@ -157,7 +159,6 @@ namespace EmulatorMS6502
                     Console.WriteLine("Do Nothing");
                     break;
             }
-
             WriteAll();
             ClearBottom();
         }
@@ -196,7 +197,7 @@ namespace EmulatorMS6502
 
         private void ClearBottom()
         {
-            Console.SetCursorPosition(0, infoBarYPosition - 1);
+            Console.SetCursorPosition(0, infoBarYPosition);
 
             var tmp = new string(' ', 90);
             for (var i = 0; i < 3; i++) Console.Write(tmp + "\n");
@@ -210,7 +211,7 @@ namespace EmulatorMS6502
             list.Add("Ram size: " + cpu.RamSize);
             list.Add($"Flags:               {Convert.ToString(cpu.StatusRegister,2)}");//N V - B D I Z C");
             list.Add($"Current Instruction: {cpu.CurrentOpcodeName}"); //{cpu.loo");
-            list.Add($"Finished cycle:       {cpu.FinishedCycles+7}");//for debug only //BRK zajmuje 7 cykli
+            list.Add($"Finished cycle:      {cpu.FinishedCycles+7}");//for debug only //BRK zajmuje 7 cykli
             list.Add($"Program counter:     {cpu.ProgramCounter.ToString("X4")} " + $"Current hex code: {Bus.Instance.ReadFromBus(cpu.ProgramCounter).ToString("X2")}");
             list.Add($"Reset Vector :       [$FFFC]: {Bus.Instance.ReadFromBus(0xFFFC).ToString("X2")} [$FFFD]: {Bus.Instance.ReadFromBus(0xFFFD).ToString("X2")}");
             list.Add($"Stack Pointer:       {cpu.StackPointer.ToString("X2")}");
@@ -235,8 +236,8 @@ namespace EmulatorMS6502
         {
             Console.SetCursorPosition(infoBarXPosition, infoBarYPosition - 2);
             Console.WriteLine(
-                "A - add instruction, R - reset RAM, L - Load program from path, Spacebar - step run, E - run whole program, esc - exit\n" +
-                "P - choose page number, left arrow, right arrow - move between pages");
+                "A - add instruction, R - reset RAM, Spacebar - step run, E - run whole program, esc - exit\n" +
+                "P - choose page number, H - stop current run");
         }
     }
 }
