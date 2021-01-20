@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Text;
 
 // OPCODE
-namespace EmulatorMOS6502.CPU {
+namespace EmulatorMOS6502.CPU
+{
 	using UInt8 = Byte;
 
 	public partial class MOS6502
@@ -22,7 +23,7 @@ namespace EmulatorMOS6502.CPU {
 			// Jeśli na jest 0	
 			setFlag('Z', a == 0x00);
 			// Jeśli 8 bit jest równy 'zapalony'	
-			setFlag('N', (Byte) (a & 0x80) == 0x80);
+			setFlag('N', (Byte)(a & 0x80) == 0x80);
 			return true;
 		}
 
@@ -54,7 +55,7 @@ namespace EmulatorMOS6502.CPU {
 			if (getFlag('Z') == 1)
 			{
 				// Podaj do wykonania lokalizacje po skoku z wzgędnego adresu	
-				absAddress = (UInt16) (programCounter + relAddress);
+				absAddress = (UInt16)(programCounter + relAddress);
 				// Jeśli na tej samej stronie to zwiększ cykle o 1	
 				// Jeśli przekroczył strone to cykle +2	
 				if ((absAddress & 0xFF00) != (programCounter & 0xFF00))
@@ -81,7 +82,7 @@ namespace EmulatorMOS6502.CPU {
 			if (getFlag('N') == 0)
 			{
 				// Podaj do wykonania lokalizacje po skoku z wzgędnego adresu	
-				absAddress = (UInt16) (programCounter + relAddress);
+				absAddress = (UInt16)(programCounter + relAddress);
 				// Jeśli na tej samej stronie to zwiększ cykle o 1	
 				// Jeśli przekroczył strone to cykle +2	
 				if ((absAddress & 0xFF00) != (programCounter & 0xFF00))
@@ -117,7 +118,7 @@ namespace EmulatorMOS6502.CPU {
 			// Ładujemy dane	
 			Fetch();
 			// Wykonujemy A(cumulator) - M(emory)	
-			Byte score = (Byte) (a - fetched); //1111 1111 - 0000 0000 = 0000 0000 1111 1111 
+			Byte score = (Byte)(a - fetched); //1111 1111 - 0000 0000 = 0000 0000 1111 1111 
 
 			// Odpowiednio podnosimy flagi:	
 			// Jeśli wynikiem jest 0 = są takie same	
@@ -178,7 +179,7 @@ namespace EmulatorMOS6502.CPU {
 			// Ściągamy ze stosu przesuwając wskaźnik
 			stackPointer++;
 			// Wpisujemy na akumulator to co znajdowało się pod adresem z wskaźnika (ze strony 1)
-			a = ReadFromBus((UInt16) (0x0100 + stackPointer));
+			a = ReadFromBus((UInt16)(0x0100 + stackPointer));
 
 			// Podnosimy odpowiednie flagi jeśli warunki spełnione
 			setFlag('N', Convert.ToBoolean(a & 0x80));
@@ -196,7 +197,7 @@ namespace EmulatorMOS6502.CPU {
 		{
 			// Ściągamy ze stosu i przywracamy flagi
 			stackPointer++;
-			statusRegister = ReadFromBus((UInt16) (0x0100 + stackPointer));
+			statusRegister = ReadFromBus((UInt16)(0x0100 + stackPointer));
 
 			// Pozostałe flagi takie jak Break oraz nieużywana (1<<5) nie powinny być ustawione więc je wyłączamy
 			// Chcemy zgasić B=(1<<4) i (1<<5) więc:
@@ -208,10 +209,10 @@ namespace EmulatorMOS6502.CPU {
 
 			// Ściągamy ze stosu kolejno składając 16 bitowy program counter w całość
 			stackPointer++;
-			UInt16 tmp = (UInt16) (ReadFromBus((UInt16) (0x0100 + stackPointer)));
+			UInt16 tmp = (UInt16)(ReadFromBus((UInt16)(0x0100 + stackPointer)));
 
 			stackPointer++;
-			programCounter = (UInt16) (((UInt16) (ReadFromBus((UInt16) (0x0100 + stackPointer))) << 8) | tmp);
+			programCounter = (UInt16)(((UInt16)(ReadFromBus((UInt16)(0x0100 + stackPointer))) << 8) | tmp);
 
 			return false;
 		}
@@ -256,7 +257,7 @@ namespace EmulatorMOS6502.CPU {
 			Fetch();
 
 			//wynik powinien być w UInt8 ale ustawiamy na UInt16 żeby było prościej zaznaczyć flagi (przy dodawaniu można np. wyjść poza zakres)
-			UInt16 result = (UInt16) ((UInt16) a + (UInt16) fetched + (UInt16) getFlag('C'));
+			UInt16 result = (UInt16)((UInt16)a + (UInt16)fetched + (UInt16)getFlag('C'));
 
 			// trzeba ustawić carry bit jeżeli wynik jest większy niż 255 (bo wynik i tak musi być podany w UInt8 a tutaj mamy UInt16)
 			if (result > 255)
@@ -273,8 +274,8 @@ namespace EmulatorMOS6502.CPU {
 			// dodatnia+dodatnia==ujemna
 			// ujemna+ujemna==dodatnia
 			bool parameterV =
-				Convert.ToBoolean((UInt16) ((~((UInt16) a ^ (UInt16) fetched) & ((UInt16) a ^ (UInt16) result)) &
-				                            (UInt16) 0x0080));
+				Convert.ToBoolean((UInt16)((~((UInt16)a ^ (UInt16)fetched) & ((UInt16)a ^ (UInt16)result)) &
+											(UInt16)0x0080));
 			setFlag('V', parameterV);
 
 			//pierwszy bit oznacza liczbę ujemną, więc jeżeli jest pierwszy bit to ustawiamy negative na true
@@ -284,7 +285,7 @@ namespace EmulatorMOS6502.CPU {
 				setFlag('N', false);
 
 			//zapisujemy wynik do akumulatora z uwzględnieniem zamiany liczby na UInt8 (był potrzebny UInt16 żeby było łatwiej)
-			a = (UInt8) (result & 0x00FF);
+			a = (UInt8)(result & 0x00FF);
 
 			return true; //czy te returny sa bez znaczenia?//-Nie, mają znaczenie -- PJ
 		}
@@ -297,7 +298,7 @@ namespace EmulatorMOS6502.CPU {
 			if (getFlag('C') == 1)
 			{
 				cycles++;
-				absAddress = (UInt16) (programCounter + relAddress);
+				absAddress = (UInt16)(programCounter + relAddress);
 
 				if ((absAddress & 0xFF00) != (programCounter & 0xFF00))
 					cycles++;
@@ -315,7 +316,7 @@ namespace EmulatorMOS6502.CPU {
 		{
 			if (getFlag('Z') == 0)
 			{
-				absAddress = (UInt16) (programCounter + relAddress);
+				absAddress = (UInt16)(programCounter + relAddress);
 
 				//przekroczenie "page boundary" skutkuje zużyciem dodatkowego cyklu
 				if ((absAddress & 0xFF00) != (programCounter & 0xFF00))
@@ -339,7 +340,7 @@ namespace EmulatorMOS6502.CPU {
 			if (getFlag('V') == 1)
 			{
 				cycles++;
-				absAddress = (UInt16) (programCounter + relAddress);
+				absAddress = (UInt16)(programCounter + relAddress);
 
 				//przekroczenie "page boundary" skutkuje zużyciem dodatkowego cyklu
 				if ((absAddress & 0xFF00) != (programCounter & 0xFF00))
@@ -369,7 +370,7 @@ namespace EmulatorMOS6502.CPU {
 		{
 			Fetch();
 
-			UInt8 result = (UInt8) (fetched - 1);
+			UInt8 result = (UInt8)(fetched - 1);
 
 			//zapisanie wartosci do bus'a
 			WriteToBus(absAddress, result);
@@ -390,7 +391,7 @@ namespace EmulatorMOS6502.CPU {
 		{
 			Fetch();
 
-			UInt8 result = (UInt8) (fetched + 1);
+			UInt8 result = (UInt8)(fetched + 1);
 
 			//zapisanie wartosci do bus'a
 			WriteToBus(absAddress, result);
@@ -413,11 +414,11 @@ namespace EmulatorMOS6502.CPU {
 
 			programCounter--;
 
-			UInt16 left8bitsOfProgramCounter = (UInt16) (programCounter >> 8);
-			Bus.Instance.WriteToBus((UInt16) (0x0100 + stackPointer), (UInt8) (left8bitsOfProgramCounter & 0x00FF));
+			UInt16 left8bitsOfProgramCounter = (UInt16)(programCounter >> 8);
+			Bus.Instance.WriteToBus((UInt16)(0x0100 + stackPointer), (UInt8)(left8bitsOfProgramCounter & 0x00FF));
 			stackPointer -= 1;
 
-			Bus.Instance.WriteToBus((UInt16) (0x0100 + stackPointer), (UInt8) (programCounter & 0x00FF));
+			Bus.Instance.WriteToBus((UInt16)(0x0100 + stackPointer), (UInt8)(programCounter & 0x00FF));
 			stackPointer -= 1;
 
 			programCounter = absAddress;
@@ -435,7 +436,7 @@ namespace EmulatorMOS6502.CPU {
 			setFlag('C', Convert.ToBoolean(fetched & 0x0001));
 
 			//teraz mozemy przesunac cala wartosc o 1 bo ostatni bit byl uzyty wyzej
-			UInt8 fetchedOneRight = (UInt8) (fetched >> 1);
+			UInt8 fetchedOneRight = (UInt8)(fetched >> 1);
 
 			if ((fetchedOneRight & 0x00FF) == 0x0000)
 				setFlag('Z', true);
@@ -448,9 +449,9 @@ namespace EmulatorMOS6502.CPU {
 				setFlag('N', false);
 
 			if (lookup[opcode].AdressingMode == IMP)
-				a = (byte) (fetchedOneRight & 0x00FF);
+				a = (byte)(fetchedOneRight & 0x00FF);
 			else
-				WriteToBus(absAddress, (byte) (fetchedOneRight & 0x00FF));
+				WriteToBus(absAddress, (byte)(fetchedOneRight & 0x00FF));
 
 			return false;
 		}
@@ -461,7 +462,7 @@ namespace EmulatorMOS6502.CPU {
 		bool PHP()
 		{
 			//zapisujemy statusRegister
-			WriteToBus((UInt16) (0x0100 + stackPointer), (UInt8) (statusRegister | (1<<4) | (1<<5)));
+			WriteToBus((UInt16)(0x0100 + stackPointer), (UInt8)(statusRegister | (1 << 4) | (1 << 5)));
 			stackPointer--;
 
 			//resetujemy obie flagi
@@ -478,7 +479,7 @@ namespace EmulatorMOS6502.CPU {
 		{
 			Fetch();
 
-			UInt16 temp = (UInt16) ((getFlag('C') << 7) | (fetched >> 1));
+			UInt16 temp = (UInt16)((getFlag('C') << 7) | (fetched >> 1));
 			if (Convert.ToBoolean(fetched & 0x01))
 				setFlag('C', true);
 			else
@@ -495,9 +496,9 @@ namespace EmulatorMOS6502.CPU {
 				setFlag('N', false);
 
 			if (lookup[opcode].AdressingMode == IMP)
-				a = (byte) (temp & 0x00FF);
+				a = (byte)(temp & 0x00FF);
 			else
-				WriteToBus(absAddress, (byte) (temp & 0x00FF));
+				WriteToBus(absAddress, (byte)(temp & 0x00FF));
 			return false;
 		}
 
@@ -553,7 +554,7 @@ namespace EmulatorMOS6502.CPU {
 			if (getFlag('C') == 0)
 			{
 				cycles++;
-				absAddress = (UInt16) (programCounter + relAddress);
+				absAddress = (UInt16)(programCounter + relAddress);
 
 				if ((absAddress & 0xFF00) != (programCounter & 0xFF00))
 					cycles++;
@@ -572,7 +573,7 @@ namespace EmulatorMOS6502.CPU {
 			if (getFlag('N') == 1)
 			{
 				cycles++;
-				absAddress = (UInt16) (programCounter + relAddress);
+				absAddress = (UInt16)(programCounter + relAddress);
 
 				if ((absAddress & 0xFF00) != (programCounter & 0xFF00))
 					cycles++;
@@ -591,7 +592,7 @@ namespace EmulatorMOS6502.CPU {
 			if (getFlag('V') == 0)
 			{
 				cycles++;
-				absAddress = (UInt16) (programCounter + relAddress);
+				absAddress = (UInt16)(programCounter + relAddress);
 
 				if ((absAddress & 0xFF00) != (programCounter & 0xFF00))
 					cycles++;
@@ -617,7 +618,7 @@ namespace EmulatorMOS6502.CPU {
 		bool CPY()
 		{
 			Fetch();
-			var tmp = (UInt16) y - (UInt16) fetched;
+			var tmp = (UInt16)y - (UInt16)fetched;
 			setFlag('C', y >= fetched);
 			setFlag('Z', (tmp & 0x00FF) == 0x0000);
 			setFlag('N', (tmp & 0x0080) == 0x0000);
@@ -631,7 +632,7 @@ namespace EmulatorMOS6502.CPU {
 		bool CPX()
 		{
 			Fetch();
-			var tmp = (UInt16) x - (UInt16) fetched;
+			var tmp = (UInt16)x - (UInt16)fetched;
 			setFlag('C', y >= fetched);
 			setFlag('Z', (tmp & 0x00FF) == 0x0000);
 			setFlag('N', (tmp & 0x0080) == 0x0000);
@@ -645,7 +646,7 @@ namespace EmulatorMOS6502.CPU {
 		bool EOR()
 		{
 			Fetch();
-			a = (Byte) (a ^ fetched);
+			a = (Byte)(a ^ fetched);
 			setFlag('Z', a == 0x00);
 			setFlag('N', Convert.ToBoolean(a & 0x80));
 			return true;
@@ -677,7 +678,7 @@ namespace EmulatorMOS6502.CPU {
 		/// </summary>
 		bool PHA()
 		{
-			WriteToBus((UInt16) (0x0100 + stackPointer), a);
+			WriteToBus((UInt16)(0x0100 + stackPointer), a);
 			stackPointer--;
 			return false;
 		}
@@ -688,14 +689,14 @@ namespace EmulatorMOS6502.CPU {
 		bool ROL()
 		{
 			Fetch();
-			var tmp = (UInt16) (fetched << 1) | getFlag('C');
+			var tmp = (UInt16)(fetched << 1) | getFlag('C');
 			setFlag('C', Convert.ToBoolean(tmp & 0xFF00));
 			setFlag('Z', (tmp & 0xFF00) == 0x0000);
 			setFlag('N', Convert.ToBoolean(tmp & 0x0080));
 			if (lookup[opcode].AdressingMode == IMP)
-				a = (byte) (tmp & 0x00FF);
+				a = (byte)(tmp & 0x00FF);
 			else
-				WriteToBus(absAddress, (byte) (tmp & 0x00FF));
+				WriteToBus(absAddress, (byte)(tmp & 0x00FF));
 			return false;
 
 		}
@@ -735,7 +736,7 @@ namespace EmulatorMOS6502.CPU {
 		/// <summary>
 		/// SBC Subtract Memory from Accumulator with Borrow - odejmowanie
 		/// </summary>
-		bool SBC() 
+		bool SBC()
 		{
 			Fetch();
 			// Po prostu używamy XORa i zamieniamy liczbe dodatnią na ujemną i wykonujemy po prostu dodawanie
@@ -745,7 +746,7 @@ namespace EmulatorMOS6502.CPU {
 			UInt16 result = (UInt16)((UInt16)a + (UInt16)negativeValue + (UInt16)getFlag('C'));
 
 			// trzeba ustawić carry bit jeżeli wynik jest większy niż 255 (bo wynik i tak musi być podany w UInt8 a tutaj mamy UInt16)
-			if(result > 255)
+			if (result > 255)
 				setFlag('C', true);
 			else
 				setFlag('C', false);
@@ -763,7 +764,7 @@ namespace EmulatorMOS6502.CPU {
 			setFlag('V', parameterV);
 
 			// pierwszy bit oznacza liczbę ujemną, więc jeżeli jest pierwszy bit to ustawiamy negative na true
-			if(Convert.ToBoolean(result & 0x80))
+			if (Convert.ToBoolean(result & 0x80))
 				setFlag('N', true);
 			else
 				setFlag('N', false);
@@ -781,28 +782,29 @@ namespace EmulatorMOS6502.CPU {
 		{
 			return false;
 		}
-		
-		bool RTS() {
+
+		bool RTS()
+		{
 			stackPointer++;
 			programCounter = (UInt16)ReadFromBus((UInt16)(0x0100 + stackPointer));
 			stackPointer++;
 			programCounter |= Convert.ToUInt16((UInt16)ReadFromBus((UInt16)(0x0100 + stackPointer)) << 8);
 			programCounter++;
 			return false;
-        }
+		}
 
 		bool ASL()
 		{
 			Fetch();
-			var tmp = (UInt16) fetched << 1;
+			var tmp = (UInt16)fetched << 1;
 
 			setFlag('C', (tmp & 0xFF00) > 0);
 			setFlag('Z', (tmp & 0x00FF) == 0x00);
 			setFlag('N', Convert.ToBoolean(tmp & 0x80)); //nie jestem pewien, ale ja jestem poprzednia osobo pisząca komentarz :)
 			if (lookup[opcode].AdressingMode == IMP)
-				a = (byte) (tmp & 0x00FF);
+				a = (byte)(tmp & 0x00FF);
 			else
-				WriteToBus(absAddress, (byte) (tmp & 0x00FF));
+				WriteToBus(absAddress, (byte)(tmp & 0x00FF));
 			return false;
 		}
 
@@ -810,25 +812,25 @@ namespace EmulatorMOS6502.CPU {
 		{
 			Fetch();
 			var tmp = a & fetched;
-			setFlag('Z',(tmp & 0x00FF)== 0x00);
-			setFlag('N',Convert.ToBoolean(fetched & (1 << 7)));
-			setFlag('V',Convert.ToBoolean(fetched & (1 << 6)));//01000000
+			setFlag('Z', (tmp & 0x00FF) == 0x00);
+			setFlag('N', Convert.ToBoolean(fetched & (1 << 7)));
+			setFlag('V', Convert.ToBoolean(fetched & (1 << 6)));//01000000
 			return false;
 		}
 
 		bool BRK()
 		{
 			programCounter++;
-			setFlag('I',true);
-			WriteToBus((UInt16) (0x0100 + stackPointer),(byte) ((programCounter >> 8) & 0x00FF));
+			setFlag('I', true);
+			WriteToBus((UInt16)(0x0100 + stackPointer), (byte)((programCounter >> 8) & 0x00FF));
 			stackPointer--;
-			WriteToBus((UInt16) (0x0100 + stackPointer), (byte) (programCounter & 0x00FF));
+			WriteToBus((UInt16)(0x0100 + stackPointer), (byte)(programCounter & 0x00FF));
 			stackPointer--;
-			
-			setFlag('B',true);
-			WriteToBus((UInt16) (0x0100 + stackPointer), statusRegister);
+
+			setFlag('B', true);
+			WriteToBus((UInt16)(0x0100 + stackPointer), statusRegister);
 			stackPointer--;
-			setFlag('B',false);
+			setFlag('B', false);
 
 			programCounter = (UInt16)(ReadFromBus(0xFFFE) | (UInt16)(ReadFromBus(0xFFFF) << 8));
 			return false;
@@ -836,14 +838,14 @@ namespace EmulatorMOS6502.CPU {
 
 		bool CLD()
 		{
-			setFlag('D',false);
+			setFlag('D', false);
 			return false;
 		}
 
 		bool DEY()
 		{
 			y--;
-			setFlag('Z',y==0x00);
+			setFlag('Z', y == 0x00);
 			setFlag('N', Convert.ToBoolean(y & 0x80));
 			return false;
 		}
@@ -851,7 +853,7 @@ namespace EmulatorMOS6502.CPU {
 		bool INY()
 		{
 			y++;
-			setFlag('Z',y==0x00);
+			setFlag('Z', y == 0x00);
 			setFlag('N', Convert.ToBoolean(y & 0x80));
 			return false;
 		}
@@ -860,7 +862,7 @@ namespace EmulatorMOS6502.CPU {
 		{
 			Fetch();
 			x = fetched;
-			setFlag('Z',x == 0x00);
+			setFlag('Z', x == 0x00);
 			setFlag('N', Convert.ToBoolean(x & 0x80));
 			return true;
 		}
@@ -868,8 +870,8 @@ namespace EmulatorMOS6502.CPU {
 		bool ORA()
 		{
 			Fetch();
-			a = (byte) (a | fetched);
-			setFlag('Z',a==0x00);
+			a = (byte)(a | fetched);
+			setFlag('Z', a == 0x00);
 			setFlag('N', Convert.ToBoolean(a & 0x80));
 			return false;
 		}
@@ -877,16 +879,16 @@ namespace EmulatorMOS6502.CPU {
 		bool PLP()
 		{
 			stackPointer++;
-			statusRegister = ReadFromBus((UInt16) (0x0100 + stackPointer));
+			statusRegister = ReadFromBus((UInt16)(0x0100 + stackPointer));
 			return false;
 		}
 
 		bool RST()
 		{
 			stackPointer++;
-			programCounter = ReadFromBus((UInt16) (0x0100 + stackPointer));
+			programCounter = ReadFromBus((UInt16)(0x0100 + stackPointer));
 			stackPointer++;
-			programCounter |= (UInt16)(ReadFromBus((UInt16) (0x0100 + stackPointer)) << 8);
+			programCounter |= (UInt16)(ReadFromBus((UInt16)(0x0100 + stackPointer)) << 8);
 
 			programCounter++;
 			return false;
@@ -894,14 +896,14 @@ namespace EmulatorMOS6502.CPU {
 
 		bool SEI()
 		{
-			setFlag('I',true);
+			setFlag('I', true);
 			return false;
 		}
 
 		bool TAX()
 		{
 			x = a;
-			setFlag('Z',x==0x00);
+			setFlag('Z', x == 0x00);
 			setFlag('N', Convert.ToBoolean(x & 0x80));
 			return false;
 		}

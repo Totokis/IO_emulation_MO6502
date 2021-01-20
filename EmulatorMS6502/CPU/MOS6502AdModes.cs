@@ -148,6 +148,11 @@ namespace EmulatorMOS6502.CPU {
             return false;
         }
 
+        /// <summary>
+        /// Absolute Addresing Mode with Y Offset
+        /// Robi dokładnie to samo co ABS poza tym że zawartość rejestru Y jest dodawany do absolute address.
+        /// Jeżeli w trakcie działania instrukcji zmieni się strona adresu to instrukcja wymaga dodatkowego cyklu.
+        /// </summary>
         bool ABY() {
             //konstruujemy adres z dwóch bajtów, dlatego najpierw pobieramy low byte a potem high byte
             UInt16 lowByte = (Byte)ReadFromBus(programCounter);
@@ -202,6 +207,12 @@ namespace EmulatorMOS6502.CPU {
             return false;
         }
 
+        /// <summary>
+        /// Indirect Y Addressing Mode
+        /// Zczytuje adres z pozycji programCounter'a który ustawia jako absolute address
+        /// następnie dodaje do niego wartość znajdującą się na rejestrze Y
+        /// w przypadku konieczności zmiany strony - doliczany jest dodatkowy cykl
+        /// </summary>
         bool IZY() //INDY
         {
 

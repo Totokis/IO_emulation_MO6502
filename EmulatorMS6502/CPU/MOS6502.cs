@@ -47,14 +47,49 @@ namespace EmulatorMOS6502.CPU {
         //Dzięki temu znamy status flag
         Byte statusRegister = 0x00;
 
-        public Byte A { get { return a; } } 
-        public Byte X { get { return x; } } 
-        public Byte Y { get { return y; } } 
+        /// <summary>
+        /// Rejestr A
+        /// </summary>
+        public Byte A { get { return a; } }
+
+        /// <summary>
+        /// Rejestr X
+        /// </summary>
+        public Byte X { get { return x; } }
+
+        /// <summary>
+        /// Rejestr Y
+        /// </summary>
+        public Byte Y { get { return y; } }
+
+        /// <summary>
+        /// StackPointer wskazuje na ostatnie miejsce na stosie
+        /// </summary>
         public Byte StackPointer { get { return  stackPointer; } }
+
+        /// <summary>
+        /// ProgramCounter przechowuje informację gdzie obecnie jest program
+        /// </summary>
         public UInt16 ProgramCounter => programCounter;
+        
+        /// <summary>
+        /// StatusRegister przechowuje wszystkie flagi wykorzystywane przez procesor
+        /// </summary>
         public Byte StatusRegister { get { return statusRegister; } }
+
+        /// <summary>
+        /// RamSize określa ilość dostępnej pamięci ram
+        /// </summary>
         public string RamSize => (Bus.Instance.Ram.Length/1024) + " kB";
+
+        /// <summary>
+        /// CurrentOpcodeName zwraca nazwę obecnie wykorzystywanego opcode'a
+        /// </summary>
         public string CurrentOpcodeName => lookup[opcode].Name;
+
+        /// <summary>
+        /// AbsoluteAddress przechowuje adres na magistrali
+        /// </summary>
         public UInt16 AbsoluteAddress => absAddress;
 
         #endregion
