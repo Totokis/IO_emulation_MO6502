@@ -12,7 +12,7 @@ namespace EmulatorMOS6502.CPU {
 		//Tu implementujemy wszystkie opcody
 
 		/// <summary>
-		/// Wpisz daną wartość z podanej lokalizacji na akumulator	
+		/// LDA  Load Accumulator with Memory - wpisz daną wartość z podanej lokalizacji na akumulator	
 		/// </summary>
 		bool LDA()
 		{
@@ -27,7 +27,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Bitowe AND dla tego co pobrane z pamięci oraz Akumulatora	
+		/// AND Memory with Accumulator - bitowe AND dla tego co pobrane z pamięci oraz Akumulatora	
 		/// </summary>
 		bool AND()
 		{
@@ -46,7 +46,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Instrukcja branch if equal, wykonanie innej instrukcji skacząc o wartość adresu względnego (relative)	
+		/// BEQ Branch on Result Zero - wykonanie innej instrukcji skacząc o wartość adresu względnego (relative)	
 		/// Jeśli flaga Z jest równa 1
 		/// </summary>
 		bool BEQ()
@@ -74,8 +74,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Instrukcja branch if plus, wykonanie innej instrukcji skacząc o wartość adresu względnego (relative)	
-		/// Jeśli flaga Z jest równa 1
+		/// BPL Branch on Result Plus - wykonanie innej instrukcji skacząc o wartość adresu względnego (relative)
 		/// </summary>
 		bool BPL()
 		{
@@ -102,7 +101,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Instrukcja czyszczenia carry bitu
+		/// CLC Clear Carry Flag - instrukcja czyszczenia flagi carry
 		/// </summary>
 		bool CLC()
 		{
@@ -111,7 +110,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Porównanie akumulatora z pamięcią
+		/// CMP Compare Memory with Accumulator - porównanie akumulatora z pamięcią
 		/// </summary>
 		bool CMP()
 		{
@@ -134,7 +133,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Obniżanie wartości rejestru X
+		/// DEX Decrement Index X by One - obniżanie wartości rejestru X
 		/// </summary>
 		bool DEX()
 		{
@@ -148,7 +147,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Podnoszenie wartości rejestru X
+		/// INX Increment Index X by One - podnoszenie wartości rejestru X
 		/// </summary>
 		bool INX()
 		{
@@ -161,19 +160,19 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Brak operacji
+		/// NOP No Operation
 		/// </summary>
-		/// <returns></returns>
 		bool NOP()
 		{
 			return false;
 		}
 
 		/// <summary>
+		/// PLA Pull Accumulator from Stack - 
 		/// Zebranie ze stosu i wczytanie z lokalizacji do akumulatora 
 		/// Stos domyślnie zapisany jest na stronie 0x01
-		/// i MOS 6502 używa stosu malejącego tzn. że stos rośnie w dół (stack pointer maleje przy push a podnosi się przy pull)
 		/// </summary>
+		// i MOS 6502 używa stosu malejącego tzn. że stos rośnie w dół (stack pointer maleje przy push a podnosi się przy pull)
 		bool PLA()
 		{
 			// Ściągamy ze stosu przesuwając wskaźnik
@@ -189,7 +188,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		///  Powrócenie z przerwań
+		/// RTI Return from Interrupt -
 		/// Instrukcja przywraca stan flag które były ustawione na status register (N, Z, C, I, D, V)
 		/// oraz przywraca program counter
 		/// </summary>
@@ -218,7 +217,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Przechowaj wartość rejestru Y pod danym adresem w pamięci
+		/// STY Sore Index Y in Memory - przechowaj wartość rejestru Y pod danym adresem w pamięci
 		/// </summary>
 		bool STY()
 		{
@@ -227,7 +226,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Przenieś wartość z rejestru X do akumulatora
+		/// TXA Transfer Index X to Accumulator - przenieś wartość z rejestru X do akumulatora
 		/// </summary>
 		bool TXA()
 		{
@@ -241,7 +240,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Podnieś flage Decimal
+		/// SED Set Decimal Flag - podnosi flage decimal
 		/// </summary>
 		bool SED()
 		{
@@ -250,7 +249,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Bitowa operacja dodawania
+		/// ADC Add Memory to Accumulator with Carry - Bitowa operacja dodawania
 		/// </summary>
 		bool ADC() //Dodawanie
 		{
@@ -291,7 +290,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// wykonanie instrukcji jedynie jeżeli jest carry bit
+		/// BCS Branch on Carry Set - wykonanuje instrukcję jedynie jeżeli carry bit = true
 		/// </summary>
 		bool BCS()
 		{
@@ -310,7 +309,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// wykonanie instrukcji jedynie jeżeli nie ma ustawionej flagi zero
+		/// BNE Branch on Result not Zero - wykonuje instrukcję jedynie jeżeli nie ma ustawionej flagi zero
 		/// </summary>
 		bool BNE()
 		{
@@ -333,7 +332,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Wykonanie instrukcji jeżeli branch nie jest overflow
+		/// BVS Branch on Overflow Set - wykonanie instrukcji jeżeli branch nie jest overflow
 		/// </summary>
 		bool BVS()
 		{
@@ -355,7 +354,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// wyczyszczenie flagi overflow (ustawienie jej na false)
+		/// CLV Clear Ocerflow Flag - wyczyszczenie flagi overflow (ustawia ją na false)
 		/// </summary>
 		bool CLV()
 		{
@@ -364,7 +363,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// odejmuje 1 od wartości
+		/// Decrement Index X by One - obniża wartość w pamięci o jeden
 		/// </summary>
 		bool DEC()
 		{
@@ -384,6 +383,9 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 
+		/// <summary>
+		/// INC Increment Memory by One - podnosi wartość pamięci o jeden
+		/// </summary>
 		bool INC()
 		{
 			Fetch();
@@ -403,7 +405,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Zapisuje programCounter do bus'a i wczytuje na niego absolute address
+		/// JSR Jump to New Location Saving Return Address - zapisuje programCounter do bus'a i wczytuje na niego absolute address
 		/// </summary>
 		bool JSR()
 		{
@@ -424,7 +426,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// 
+		/// LSR Shift One Bit Right - przesuwa jeden bit w prawo (operacja przesunięcia bitowego)
 		/// </summary>
 		bool LSR()
 		{
@@ -453,6 +455,9 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 
+		/// <summary>
+		/// PHP Push Processor Status on Stack - zapisuje status flag (register status) na drugiej stronie pamięci
+		/// </summary>
 		bool PHP()
 		{
 			//zapisujemy statusRegister
@@ -466,6 +471,9 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 
+		/// <summary>
+		/// ROR Rotate Right - Rotate One bit Left. Przesuwa wszystkie bajty o jeden w prawo
+		/// </summary>
 		bool ROR()
 		{
 			Fetch();
@@ -494,7 +502,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// ustawienie flagi carry bit na true
+		/// SEC Set Carry Flag - ustawia flagę carry na true
 		/// </summary>
 		bool SEC()
 		{
@@ -505,7 +513,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// zapisanie x na adresie abs
+		/// STX Store Index X in memory - zapisuje x na absolutnym adresie
 		/// </summary>
 		bool STX()
 		{
@@ -516,7 +524,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Zapisuje stackPointer pod x'ksem i ustawia flagi Z i N jezeli zajdzie taka potrzeba
+		/// TSX Transfer accumulator to X - zapisuje stackPointer pod x i ustawia flagi Z i N jezeli zajdzie taka potrzeba
 		/// </summary>
 		bool TSX()
 		{
@@ -538,7 +546,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Branch if Carry Clear - Jeżeli flaga C jest ustawiona na  0 to wtedy ustawiamy PC na odpowiedni adres
+		/// BCC Branch if Carry Clear - Jeżeli flaga C jest ustawiona na  0 to wtedy ustawiamy PC na odpowiedni adres
 		/// </summary>
 		bool BCC()
 		{
@@ -557,7 +565,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Branch if negative - jeżeli flaga N jest ustawiona na 1 to ustawiamy PC na odpowiedni adres
+		/// BMI Branch if negative - jeżeli flaga N jest ustawiona na 1 to ustawiamy PC na odpowiedni adres
 		/// </summary>
 		bool BMI()
 		{
@@ -576,7 +584,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Branch if Overflow Clear - jeżeli flaga V jest ustawiona na 0 to ustawiamy PC na odpowiedni adres
+		/// BVC Branch if Overflow Clear - jeżeli flaga V jest ustawiona na 0 to ustawiamy PC na odpowiedni adres
 		/// </summary>
 		bool BVC()
 		{
@@ -595,7 +603,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Clear Interrupt Flag (Disable Interrupts) - Ustawia flage I na 0
+		/// CLI Clear Interrupt Flag (Disable Interrupts) - Ustawia flage I na 0
 		/// </summary>
 		bool CLI()
 		{
@@ -604,7 +612,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Compare Y Register - Zmienia flagi N, C, Z
+		/// CPY Compare Y Register - Zmienia flagi N, C, Z
 		/// </summary>
 		bool CPY()
 		{
@@ -618,7 +626,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Compare X Register - Zmienia flagi N, C, Z
+		/// CPX Compare X Register - Zmienia flagi N, C, Z
 		/// </summary>
 		bool CPX()
 		{
@@ -632,7 +640,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Bitowa operacja XOR - Zmienia flagi Negative i Zero jeśli to konieczne
+		/// EOR Bitowa operacja XOR - Zmienia flagi Negative i Zero jeśli to konieczne
 		/// </summary>
 		bool EOR()
 		{
@@ -644,7 +652,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Jump To Location - skacze do lokacji czyli ustawia Program Counter na absolute address
+		/// JMP Jump To Location - skacze do lokacji czyli ustawia Program Counter na absolute address
 		/// </summary>
 		bool JMP()
 		{
@@ -653,7 +661,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Load The Y Register - wczytuje rejestr y z fetched potencjalnie zmienia flagi N i Z
+		/// LDY Load The Y Register - wczytuje rejestr y z fetched potencjalnie zmienia flagi N i Z
 		/// </summary>
 		bool LDY()
 		{
@@ -665,7 +673,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Push acuumulator to Stack - po prostu używa funkcji WriteToBus
+		/// PHA Push acuumulator to Stack - po prostu używa funkcji WriteToBus
 		/// </summary>
 		bool PHA()
 		{
@@ -675,10 +683,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Cokolwiek ta instrukacja robi dokładnie, to ważne jest to że jest używana przy 
-		/// wyświetlaniu cyfr danej liczby. Przy każdej iteracji ustawia najniższy bajt akumulatora 
-		/// bit y które odpowiadają kolejnej cyfrze która jest do wyświetlenia (?)
-		/// https://stackoverflow.com/questions/19857339/why-is-rol-instruction-used
+		/// ROL Rotate One bit Left. Przy każdej przsesuwa bity o jeden w lewo
 		/// </summary>
 		bool ROL()
 		{
@@ -705,7 +710,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Transfer Accumulator to Y Register
+		/// TAY Transfer Accumulator to Y Register
 		/// </summary>
 
 		bool TAY()
@@ -717,7 +722,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Transfer Y Register to Accumulator
+		/// TYA Transfer Index Y to Accumulator - Przekazuje rejest Y do akumulatora 
 		/// </summary>
 		bool TYA()
 		{
@@ -727,6 +732,9 @@ namespace EmulatorMOS6502.CPU {
 			return false;
 		}
 
+		/// <summary>
+		/// SBC Subtract Memory from Accumulator with Borrow - odejmowanie
+		/// </summary>
 		bool SBC() 
 		{
 			Fetch();
@@ -767,7 +775,7 @@ namespace EmulatorMOS6502.CPU {
 		}
 
 		/// <summary>
-		/// Funkcja obejmująca niewłaściwe opcody
+		/// XXX - Funkcja obejmująca nielegalne opcody
 		/// </summary>
 		bool XXX()
 		{
