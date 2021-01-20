@@ -23,6 +23,7 @@ namespace EmulatorMS6502
         private static readonly int outputPositionY = 4;
         private static readonly int outputPositionX = 4;
         private int _cycles;
+        private bool isWindows;
 
         private List<byte> output;
         private ASCIIEncoding ascii;
@@ -57,21 +58,26 @@ namespace EmulatorMS6502
 
         public void InitVisualisation()
         {
+            if (Environment.OSVersion.Platform != PlatformID.Unix)
+            {
+                isWindows = true;
+            }
+            else
+            {
+                isWindows = false;
+            }
             Console.Title = "MOS6502";
-            Console.CursorVisible = true;
-            //Console.ForegroundColor = ConsoleColor.Yellow;
-            //Console.BackgroundColor = ConsoleColor.Blue;
+            Console.CursorVisible = false;
         }
 
         public void WriteAll()
         {
-
             WriteOutput();
         }
 
         public void ShowState()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix)
+            if (isWindows)
                 Console.SetWindowSize(100, 40);
             
             if (isFistTime)

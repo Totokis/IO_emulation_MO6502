@@ -12,15 +12,11 @@ namespace EmulatorMS6502
         private static Computer _instance;
         private static readonly object CompPadlock = new object();
         private Bus _bus;
-        private Dissassembler _dissassembler;
-        private HexConverter _converter;
         private MOS6502 _mos6502;
         private List<byte> _instructions;
         private static bool _isListeningForInput = false;
         private Queue<byte> _keyboardBuffer;
-
-        public List<byte> Instructions => _instructions;
-        public Dissassembler Dissassembler => _dissassembler;
+        
         
         public bool IsWaitingForInput {
             get=>_isListeningForInput;
@@ -43,10 +39,8 @@ namespace EmulatorMS6502
         {
             _bus = new Bus(ramCapacity);
             _mos6502 = new MOS6502(_bus);
-            _dissassembler = new Dissassembler(Instance);
             Bus.Instance.setRamCapacity(ramCapacity);
             _mos6502 = new MOS6502(Bus.Instance);
-            _converter = new HexConverter();
         }
 
         public void StartComputer()
@@ -128,7 +122,7 @@ namespace EmulatorMS6502
         private List<byte> LoadInstructionsFromPath()
         {
             var bytes = File.ReadAllBytes(
-                "C:/Users/Filip/source/repos/EmulatorMS6502/EmulatorMS6502/6502Tests/ehbasic 2.bin");
+                ".//6502Tests//ehbasic 2.bin");
             return bytes.ToList();
         }
       

@@ -18,7 +18,6 @@ namespace EmulatorMOS6502.CPU {
 		{
 			Fetch();
 			a = fetched;
-			Console.WriteLine($"--a {a}--");
 			// Jeśli na jest 0	
 			setFlag('Z', a == 0x00);
 			// Jeśli 8 bit jest równy 'zapalony'	
