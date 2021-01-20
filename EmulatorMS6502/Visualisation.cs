@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using EmulatorMOS6502.CPU;
+using System.Threading;
 
 namespace EmulatorMS6502
 {
@@ -64,7 +65,7 @@ namespace EmulatorMS6502
 
         public void WriteAll()
         {
-            Console.Clear();
+
             WriteOutput();
         }
 
@@ -103,12 +104,16 @@ namespace EmulatorMS6502
             WriteAll();
         }
         
+        public void WriteStuff(string str) {
+            Console.SetCursorPosition(0, 0);
+            Console.Write(str);
+        }
         private void WriteOutput()
         {
             if (output != null)
             {
                 String decoded = ascii.GetString(output.ToArray());
-                Console.Write(decoded);
+                WriteStuff(decoded);
             }
           
         }

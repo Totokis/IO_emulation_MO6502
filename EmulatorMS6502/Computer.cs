@@ -128,7 +128,7 @@ namespace EmulatorMS6502
         private List<byte> LoadInstructionsFromPath()
         {
             var bytes = File.ReadAllBytes(
-                "/Users/pawel/Dropbox/Sem5/Inżynieria Oprogramowania/Emulator/IO_emulation_MO6502/EmulatorMS6502/6502Tests/ehbasic 2.bin");
+                "C:/Users/Filip/source/repos/EmulatorMS6502/EmulatorMS6502/6502Tests/ehbasic 2.bin");
             return bytes.ToList();
         }
       
