@@ -82,6 +82,9 @@ namespace EmulatorMS6502
             
             if (isFistTime)
             {
+                Console.Clear();
+                Console.WriteLine("Derived from EhBASIC");
+                Thread.Sleep(100);
                 WriteAll();
                 isFistTime = false;
             }
