@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="EmulatorMOS6502.CPU.MOS6502">
+    <Position X="2.5" Y="0.5" Width="1.5" />
+    <Members>
+      <Method Name="ABS" Hidden="true" />
+      <Method Name="ABX" Hidden="true" />
+      <Method Name="ABY" Hidden="true" />
+      <Method Name="ADC" Hidden="true" />
+      <Method Name="AND" Hidden="true" />
+      <Method Name="ASL" Hidden="true" />
+      <Method Name="BCC" Hidden="true" />
+      <Method Name="BCS" Hidden="true" />
+      <Method Name="BEQ" Hidden="true" />
+      <Method Name="BMI" Hidden="true" />
+      <Method Name="BNE" Hidden="true" />
+      <Method Name="BPL" Hidden="true" />
+      <Method Name="BRK" Hidden="true" />
+      <Method Name="BVC" Hidden="true" />
+      <Method Name="BVS" Hidden="true" />
+      <Method Name="CLC" Hidden="true" />
+      <Method Name="CLD" Hidden="true" />
+      <Method Name="CLI" Hidden="true" />
+      <Method Name="CLV" Hidden="true" />
+      <Method Name="CMP" Hidden="true" />
+      <Method Name="CPX" Hidden="true" />
+      <Method Name="CPY" Hidden="true" />
+      <Method Name="DEC" Hidden="true" />
+      <Method Name="DEX" Hidden="true" />
+      <Method Name="DEY" Hidden="true" />
+      <Method Name="EOR" Hidden="true" />
+      <Method Name="IMM" Hidden="true" />
+      <Method Name="IMP" Hidden="true" />
+      <Method Name="INC" Hidden="true" />
+      <Method Name="IND" Hidden="true" />
+      <Method Name="INX" Hidden="true" />
+      <Method Name="INY" Hidden="true" />
+      <Method Name="IRQ" Hidden="true" />
+      <Method Name="IZX" Hidden="true" />
+      <Method Name="IZY" Hidden="true" />
+      <Method Name="JMP" Hidden="true" />
+      <Method Name="JSR" Hidden="true" />
+      <Method Name="LDA" Hidden="true" />
+      <Method Name="LDX" Hidden="true" />
+      <Method Name="LDY" Hidden="true" />
+      <Method Name="LSR" Hidden="true" />
+      <Method Name="NMI" Hidden="true" />
+      <Method Name="NOP" Hidden="true" />
+      <Method Name="ORA" Hidden="true" />
+      <Method Name="PHA" Hidden="true" />
+      <Method Name="PHP" Hidden="true" />
+      <Method Name="PLA" Hidden="true" />
+      <Method Name="PLP" Hidden="true" />
+      <Method Name="REL" Hidden="true" />
+      <Method Name="ROL" Hidden="true" />
+      <Method Name="ROR" Hidden="true" />
+      <Method Name="RST" Hidden="true" />
+      <Method Name="RTI" Hidden="true" />
+      <Method Name="RTS" Hidden="true" />
+      <Method Name="SBC" Hidden="true" />
+      <Method Name="SEC" Hidden="true" />
+      <Method Name="SED" Hidden="true" />
+      <Method Name="SEI" Hidden="true" />
+      <Method Name="STA" Hidden="true" />
+      <Method Name="STX" Hidden="true" />
+      <Method Name="STY" Hidden="true" />
+      <Method Name="TAX" Hidden="true" />
+      <Method Name="TAY" Hidden="true" />
+      <Method Name="TSX" Hidden="true" />
+      <Method Name="TXA" Hidden="true" />
+      <Method Name="TXS" Hidden="true" />
+      <Method Name="TYA" Hidden="true" />
+      <Method Name="ZP0" Hidden="true" />
+      <Method Name="ZPX" Hidden="true" />
+      <Method Name="ZPY" Hidden="true" />
+    </Members>
+    <NestedTypes>
+      <Class Name="EmulatorMOS6502.CPU.MOS6502.Instruction" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>CPU\MOS6502Lookup.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>IAAATBAiBGCCBsQIlvHeAhKAA2hKAWCwYABgcIAA9qI=</HashCode>
+      <FileName>CPU\MOS6502.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EmulatorMS6502.Bus">
+    <Position X="5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAGAAAAgBAAAAAAABEAAAAQIAAAAAAAAA=</HashCode>
+      <FileName>Bus.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="cpu" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="EmulatorMS6502.Computer">
+    <Position X="9.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAEiAQAAAAAAAwACAhAEAQBAAAIAAAASBAEAQAAAAA=</HashCode>
+      <FileName>Computer.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_bus" />
+      <Field Name="_converter" />
+      <Field Name="_dissassembler" />
+      <Field Name="_mos6502" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="EmulatorMS6502.Dissassembler">
+    <Position X="9.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAkAAAQAAAAAAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Dissassembler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_computer" />
+      <Field Name="_mos6502" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="EmulatorMS6502.DissassemblyInstruction">
+    <Position X="13.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAIAAAAAAAAAAEAAAAgAAAAAAkAAAAAAAAAACAAAA=</HashCode>
+      <FileName>DissassemblyInstruction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EmulatorMS6502.HexConverter">
+    <Position X="7" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAACAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAIA=</HashCode>
+      <FileName>HexConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EmulatorMS6502.Program">
+    <Position X="16.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EmulatorMS6502.Visualisation">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEgQAAAAAIAABiEEIAACAAAAAABwAAAAUIAABAEACQg=</HashCode>
+      <FileName>Visualisation.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="cpu" />
+    </ShowAsAssociation>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
