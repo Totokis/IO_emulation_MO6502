@@ -26,8 +26,6 @@ namespace EmulatorMS6502 {
         
         #endregion
 
-
-
         #region Bus functionality 
         public void WriteToBus(UInt16 address, Byte data) {
             _ram[address] = data;

@@ -783,7 +783,10 @@ namespace EmulatorMOS6502.CPU
 			return false;
 		}
 
-		bool RTS()
+		/// <summary>
+		/// RTS Return from Subroutine - odczytuje program counter
+		/// </summary>
+		bool RTS() 
 		{
 			stackPointer++;
 			programCounter = (UInt16)ReadFromBus((UInt16)(0x0100 + stackPointer));
@@ -793,6 +796,9 @@ namespace EmulatorMOS6502.CPU
 			return false;
 		}
 
+		/// <summary>
+		/// ASL Shift Left One Bit - operacja przesunięcia bitowego o 1 w lewo
+		/// </summary>
 		bool ASL()
 		{
 			Fetch();
@@ -808,6 +814,9 @@ namespace EmulatorMOS6502.CPU
 			return false;
 		}
 
+		/// <summary>
+		/// BIT Test Bits in Memory with Accumulator - ustawia flagi N, Z, V na podstawie danych z pamięci
+		/// </summary>
 		bool BIT()
 		{
 			Fetch();
@@ -818,6 +827,9 @@ namespace EmulatorMOS6502.CPU
 			return false;
 		}
 
+		/// <summary>
+		/// BRK Force Break - Podnosi flagę interupt i break
+		/// </summary>
 		bool BRK()
 		{
 			programCounter++;
@@ -836,12 +848,18 @@ namespace EmulatorMOS6502.CPU
 			return false;
 		}
 
+		/// <summary>
+		/// CLD Clear Decimal Mode - czyści flagę decimal
+		/// </summary>
 		bool CLD()
 		{
 			setFlag('D', false);
 			return false;
 		}
 
+		/// <summary>
+		/// DEY Decrement Index Y by One - obniża x o jeden
+		/// </summary>
 		bool DEY()
 		{
 			y--;
@@ -850,6 +868,9 @@ namespace EmulatorMOS6502.CPU
 			return false;
 		}
 
+		/// <summary>
+		/// INY Increment Index Y by One - podwyższa y o jeden
+		/// </summary>
 		bool INY()
 		{
 			y++;
@@ -858,6 +879,9 @@ namespace EmulatorMOS6502.CPU
 			return false;
 		}
 
+		/// <summary>
+		/// LDX Load Index X with Memory - ładuje dane z fetch do x
+		/// </summary>
 		bool LDX()
 		{
 			Fetch();
@@ -867,6 +891,9 @@ namespace EmulatorMOS6502.CPU
 			return true;
 		}
 
+		/// <summary>
+		/// ORA OR Memory with Accumulator - wykonuje bitowe or na akumulatorze i miejscu w pamięci
+		/// </summary>
 		bool ORA()
 		{
 			Fetch();
@@ -876,6 +903,9 @@ namespace EmulatorMOS6502.CPU
 			return false;
 		}
 
+		/// <summary>
+		/// PLP Pull Processor Status from Stack - odczytuje rejestr flag
+		/// </summary>
 		bool PLP()
 		{
 			stackPointer++;
@@ -894,12 +924,19 @@ namespace EmulatorMOS6502.CPU
 			return false;
 		}
 
+		/// <summary>
+		/// SEI Set Interrupt Disable Status - ustawia flage interupt na true
+		/// </summary>
+        
 		bool SEI()
 		{
 			setFlag('I', true);
 			return false;
 		}
 
+		/// <summary>
+		/// TAX Transfer Accumulator to Index X - przekazuje acumulator do rejestru x
+		/// </summary>
 		bool TAX()
 		{
 			x = a;
@@ -908,6 +945,9 @@ namespace EmulatorMOS6502.CPU
 			return false;
 		}
 
+		/// <summary>
+		/// TSX Transfer Stack Pointer to Index X - przekazuje stac pointer do rejestru x
+		/// </summary>
 		bool TXS()
 		{
 			stackPointer = x;
