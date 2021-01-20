@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="EmulatorMOS6502.CPU.MOS6502">
-    <Position X="2.5" Y="0.5" Width="1.5" />
+    <Position X="2.75" Y="0.5" Width="1.5" />
     <Members>
       <Method Name="ABS" Hidden="true" />
       <Method Name="ABX" Hidden="true" />
@@ -87,7 +87,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="EmulatorMS6502.Bus">
-    <Position X="5" Y="1.25" Width="1.5" />
+    <Position X="5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAEAAAAGAAAAgBAAAAAAABEAAAAQIAAAAAAAAA=</HashCode>
       <FileName>Bus.cs</FileName>
@@ -97,7 +97,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="EmulatorMS6502.Computer">
-    <Position X="9.5" Y="2.75" Width="1.5" />
+    <Position X="7.25" Y="5.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>gAAEiAQAAAAAAAwACAhAEAQBAAAIAAAASBAEAQAAAAA=</HashCode>
       <FileName>Computer.cs</FileName>
@@ -105,40 +105,14 @@
     <ShowAsAssociation>
       <Field Name="_bus" />
       <Field Name="_converter" />
-      <Field Name="_dissassembler" />
       <Field Name="_mos6502" />
     </ShowAsAssociation>
-  </Class>
-  <Class Name="EmulatorMS6502.Dissassembler">
-    <Position X="9.5" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAkAAAQAAAAAAAAAAAAAAAAAAgA=</HashCode>
-      <FileName>Dissassembler.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="_computer" />
-      <Field Name="_mos6502" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="EmulatorMS6502.DissassemblyInstruction">
-    <Position X="13.25" Y="2.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>QAAAIAAAAAAAAAAEAAAAgAAAAAAkAAAAAAAAAACAAAA=</HashCode>
-      <FileName>DissassemblyInstruction.cs</FileName>
-    </TypeIdentifier>
   </Class>
   <Class Name="EmulatorMS6502.HexConverter">
-    <Position X="7" Y="6.25" Width="1.5" />
+    <Position X="7.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ABAAAACAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAIA=</HashCode>
       <FileName>HexConverter.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="EmulatorMS6502.Program">
-    <Position X="16.5" Y="1.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
-      <FileName>Program.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="EmulatorMS6502.Visualisation">
