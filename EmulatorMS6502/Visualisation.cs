@@ -24,11 +24,8 @@ namespace EmulatorMS6502
         private int currentPageNumber = 2;
         private List<string> instructionsInHuman;
         private bool isFistTime = true;
-
-        private Visualisation()
-        {
-        }
-
+        private bool isWindows;
+        
         public static Visualisation Instance
         {
             get
@@ -48,15 +45,23 @@ namespace EmulatorMS6502
 
         public void InitVisualisation()
         {
+            if (Environment.OSVersion.Platform != PlatformID.Unix)
+            {
+                isWindows = true;
+            }
+            else
+            {
+                isWindows = false;
+            }
             Console.Title = "MOS6502";
             Console.CursorVisible = false;
-            //Console.ForegroundColor = ConsoleColor.White;
-            //Console.BackgroundColor = ConsoleColor.Blue;
         }
 
         public void WriteAll()
         {
-            Console.Clear();
+            if(!isWindows)
+                Console.Clear();
+            
             var zeroPage = new List<string>();
             var anotherPage = new List<string>();
 
@@ -92,10 +97,9 @@ namespace EmulatorMS6502
 
         public void ShowState()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix)
+            if(isWindows)
                 Console.SetWindowSize(100, 40);
-
-
+            
             if (isFistTime)
             {
                 WriteAll();
@@ -107,13 +111,6 @@ namespace EmulatorMS6502
             Console.SetCursorPosition(2, infoBarYPosition);
             switch (choose.Key)
             {
-                case ConsoleKey.A:
-                    Console.Write("Wprowadz program który chcesz uruhomić:\n");
-                    Console.SetCursorPosition(2, infoBarYPosition + 1);
-                    Computer.Instance.GatherInstructions();
-                    //instructionsInHuman = Computer.Instance.Dissassembler.GetInstructions();
-                    Computer.Instance.LoadProgramIntoMemory();
-                    break;
                 case ConsoleKey.Escape:
                     Environment.Exit(0);
                     break;
@@ -121,14 +118,9 @@ namespace EmulatorMS6502
                     cpu.Reset();
                     cpu.FinishedCycles = 0;
                     break;
-                case ConsoleKey.C:
-                    cpu.Reset();
-                    //Bus.Instance.Ram = new byte[256 * 256];
-                    break;
                 case ConsoleKey.L:
                     Console.Write("Wczytuję program testowy:\n");
                     Computer.Instance.LoadInstructionsFromFile();
-                    //instructionsInHuman = Computer.Instance.Dissassembler.GetInstructions();
                     Computer.Instance.LoadProgramIntoMemory(0x4000);
                     break;
                 case ConsoleKey.P:
@@ -214,8 +206,6 @@ namespace EmulatorMS6502
 
             var list = new List<string>();
             list.Add("$0210: (Check failure code) :" + Bus.Instance.ReadFromBus(0x0210) + $"[{Bus.Instance.ReadFromBus(0x0210).ToString("X2")}]");
-            list.Add("$80:  " + Bus.Instance.ReadFromBus(0x0080) + $"[{Bus.Instance.ReadFromBus(0x0080).ToString("X2")}]");
-
             list.Add("Ram size: " + cpu.RamSize);
             list.Add($"Flags:               {Convert.ToString(cpu.StatusRegister,2)}");//N V - B D I Z C");
             list.Add($"Current Instruction: {cpu.CurrentOpcodeName}"); //{cpu.loo");
@@ -244,7 +234,8 @@ namespace EmulatorMS6502
         {
             Console.SetCursorPosition(infoBarXPosition, infoBarYPosition - 2);
             Console.WriteLine(
-                "A - add instruction, R - reset RAM, L - Load program from path, Spacebar - step run, E - run whole program, esc - exit");
+                "R - reset RAM, L - Load program from path, Spacebar - step run, E - run whole program, esc - exit\n" +
+                "P - choose page number, left arrow, right arrow - move between pages");
         }
     }
 }

@@ -12,14 +12,8 @@ namespace EmulatorMS6502
         private static Computer _instance;
         private static readonly object CompPadlock = new object();
         private Bus _bus;
-        private Dissassembler _dissassembler;
-        private HexConverter _converter;
         private MOS6502 _mos6502;
         private List<byte> _instructions;
-
-        public List<byte> Instructions => _instructions;
-
-        public Dissassembler Dissassembler => _dissassembler;
 
         public static Computer Instance
         {
@@ -37,10 +31,8 @@ namespace EmulatorMS6502
         {
             _bus = new Bus(ramCapacity);
             _mos6502 = new MOS6502(_bus);
-            _dissassembler = new Dissassembler(Instance);
             Bus.Instance.setRamCapacity(ramCapacity);
             _mos6502 = new MOS6502(Bus.Instance);
-            _converter = new HexConverter();
         }
 
         public void StartComputer()
@@ -48,12 +40,6 @@ namespace EmulatorMS6502
             Visualisation.Instance.InitVisualisation();
             Visualisation.Instance.SetCpu(_mos6502);
             while (true) Visualisation.Instance.ShowState();
-        }
-        
-        public void GatherInstructions()
-        {
-            var instructions = Console.ReadLine();
-            _instructions = Instance._converter.ConvertInstructionsToBytes(instructions);
         }
         
         public void RunProgramInSteps()
@@ -91,14 +77,25 @@ namespace EmulatorMS6502
 
         private void GatherPath()
         {
-            //Console.WriteLine("Tu będzie możliwość wklejenia ścieżki, na ten moment program jest ładowany z ustalonej lokalizacji ");
             _instructions = LoadInstructionsFromPath();
         }
         
         private void LoadInstructionsIntoMemory(UInt16 specyficAddress = 0x0200)
         {
-            _mos6502.InjectInstructions(_instructions, specyficAddress);
+            InjectInstructions(_instructions, specyficAddress);
             _mos6502.Reset();
+        }
+        
+        public void InjectInstructions(List<byte> bytes, UInt16 specyficAddress=0x0200)
+        {
+            ushort localAddress = specyficAddress;
+            for (int i = 0; i < bytes.Capacity; i++)
+            {
+                if (localAddress == 0xFFFF)
+                    break;
+                Bus.Instance.WriteToBus(localAddress,bytes[i]);
+                localAddress++;
+            }
         }
         
         private List<byte> LoadInstructionsFromPath()
