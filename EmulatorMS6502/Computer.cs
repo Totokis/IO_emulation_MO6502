@@ -12,15 +12,12 @@ namespace EmulatorMS6502
         private static Computer _instance;
         private static readonly object CompPadlock = new object();
         private Bus _bus;
-        private Dissassembler _dissassembler;
         private HexConverter _converter;
         private MOS6502 _mos6502;
         private List<byte> _instructions;
 
         public List<byte> Instructions => _instructions;
-
-        public Dissassembler Dissassembler => _dissassembler;
-
+        
         public static Computer Instance
         {
             get
@@ -37,7 +34,6 @@ namespace EmulatorMS6502
         {
             _bus = new Bus(ramCapacity);
             _mos6502 = new MOS6502(_bus);
-            _dissassembler = new Dissassembler(Instance);
             Bus.Instance.setRamCapacity(ramCapacity);
             _mos6502 = new MOS6502(Bus.Instance);
             _converter = new HexConverter();
@@ -53,7 +49,7 @@ namespace EmulatorMS6502
         public void GatherInstructions()
         {
             var instructions = Console.ReadLine();
-            _instructions = Instance._converter.ConvertInstructionsToBytes(instructions);
+            Instance._instructions = Instance._converter.ConvertInstructionsToBytes(instructions);
         }
         
         public void RunProgramInSteps()
@@ -83,30 +79,30 @@ namespace EmulatorMS6502
         {
             LoadInstructionsIntoMemory(specyficAddress);
         }
-
-        public void LoadInstructionsFromFile()
-        {
-            GatherPath();
-        }
-
-        private void GatherPath()
-        {
-            //Console.WriteLine("Tu będzie możliwość wklejenia ścieżki, na ten moment program jest ładowany z ustalonej lokalizacji ");
-            _instructions = LoadInstructionsFromPath();
-        }
         
         private void LoadInstructionsIntoMemory(UInt16 specyficAddress = 0x0200)
         {
-            _mos6502.InjectInstructions(_instructions, specyficAddress);
-            //_mos6502.Reset();
+            InjectInstructions(_instructions, specyficAddress);
+            _mos6502.Reset();
         }
-        
-        private List<byte> LoadInstructionsFromPath()
+
+        private void InjectInstructions(List<byte> instructions, ushort specyficAddress)
         {
-            var bytes = File.ReadAllBytes(
-                "C:\\Users\\njana\\source\\repos\\Nowy folder\\IO_emulation_MO6502\\EmulatorMS6502\\6502Tests\\nestest.nes");
-            //"//Users//pawel//Dropbox//Sem5//Inżynieria Oprogramowania//Emulator//IO_emulation_MO6502//EmulatorMS6502//6502Tests//nestest.nes");
-            return bytes.ToList();
+           
+            ushort localAddress = specyficAddress;
+            for (int i = 0; i < instructions.Count; i++)
+            {
+                if (localAddress == 0xFFFF)
+                    break;
+                Bus.Instance.WriteToBus(localAddress,instructions[i]);
+                localAddress++;
+            }
+
+            if (Bus.Instance.ReadFromBus(0xFFFC) == 0 && Bus.Instance.ReadFromBus(0xFFFD) == 0)
+            {
+                Bus.Instance.WriteToBus(0xFFFC,(Byte)(specyficAddress & 0x00FF));
+                Bus.Instance.WriteToBus(0xFFFD,(Byte)((specyficAddress & 0xFF00)>>8));
+            }
         }
     }
 }

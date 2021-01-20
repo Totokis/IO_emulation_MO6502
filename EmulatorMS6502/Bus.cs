@@ -24,7 +24,6 @@ namespace EmulatorMS6502 {
             }
         }
         
-
         #endregion
 
 
@@ -34,9 +33,8 @@ namespace EmulatorMS6502 {
             _ram[address] = data;
         }
 
-        public Byte ReadFromBus(UInt16 address, bool isReadOnly = false) //TODO Jak nie użyte to wywalić isReadOnly
+        public Byte ReadFromBus(UInt16 address)
         {
-            //Console.WriteLine("RAM data: "+ Ram[address]);
             return _ram[address];
         }
 
