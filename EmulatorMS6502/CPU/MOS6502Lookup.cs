@@ -1,36 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using EmulatorMS6502;
 
-namespace EmulatorMOS6502.CPU {
-    public partial class MOS6502 {
-
-        Instruction[] lookup;
-        private class Instruction {
-            public Instruction(string name, Func<bool> opcode,Func<bool> adressingMode, byte cycles) {
-                Name = name;
-                Opcode = opcode;
-                AdressingMode = adressingMode;
-                Cycles = cycles;
-            }
-            
-            public string Name { get; }
-            public Func<bool> Opcode { get; }
-            public Func<bool> AdressingMode { get; }
-            public Byte Cycles { get; }
-        }
-
-        //Lepiej będzie zainicjować poprzez funkcję z krótka nazwą w macierzy zamiast pisać całą formułkę 16x16 razy 
-        Instruction cI(string name, Func<bool> opcode, Func<bool> adressingMode, byte cycles) {
-            var result = new Instruction(name, opcode, adressingMode, cycles);
-            return result;
-        }
+namespace EmulatorMOS6502.CPU
+{
+    public partial class MOS6502
+    {
+        private readonly Instruction[] lookup;
 
         //Przykład, macierz inicjujemy w konstruktorze
         public MOS6502(Bus autobus)
         {
-            this.bus = autobus;
+            bus = autobus;
             lookup = new Instruction[256]
             {
                 cI("BRK", BRK, IMM, 7), cI("ORA", ORA, IZX, 6), cI("XXX", XXX, IMP, 2), cI("XXX", XXX, IMP, 8),
@@ -96,8 +76,31 @@ namespace EmulatorMOS6502.CPU {
                 cI("BEQ", BEQ, REL, 2), cI("SBC", SBC, IZY, 5), cI("XXX", XXX, IMP, 2), cI("XXX", XXX, IMP, 8),
                 cI("XXX", NOP, IMP, 4), cI("SBC", SBC, ZPX, 4), cI("INC", INC, ZPX, 6), cI("XXX", XXX, IMP, 6),
                 cI("SED", SED, IMP, 2), cI("SBC", SBC, ABY, 4), cI("NOP", NOP, IMP, 2), cI("XXX", XXX, IMP, 7),
-                cI("XXX", NOP, IMP, 4), cI("SBC", SBC, ABX, 4), cI("INC", INC, ABX, 7), cI("XXX", XXX, IMP, 7),
+                cI("XXX", NOP, IMP, 4), cI("SBC", SBC, ABX, 4), cI("INC", INC, ABX, 7), cI("XXX", XXX, IMP, 7)
             };
+        }
+
+        //Lepiej będzie zainicjować poprzez funkcję z krótka nazwą w macierzy zamiast pisać całą formułkę 16x16 razy 
+        private Instruction cI(string name, Func<bool> opcode, Func<bool> adressingMode, byte cycles)
+        {
+            var result = new Instruction(name, opcode, adressingMode, cycles);
+            return result;
+        }
+
+        private class Instruction
+        {
+            public Instruction(string name, Func<bool> opcode, Func<bool> adressingMode, byte cycles)
+            {
+                Name = name;
+                Opcode = opcode;
+                AdressingMode = adressingMode;
+                Cycles = cycles;
+            }
+
+            public string Name { get; }
+            public Func<bool> Opcode { get; }
+            public Func<bool> AdressingMode { get; }
+            public byte Cycles { get; }
         }
     }
 }

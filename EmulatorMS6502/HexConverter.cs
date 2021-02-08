@@ -11,6 +11,7 @@ namespace EmulatorMS6502
             foreach (var instruction in separatedInstructions) bytes.Add(ConvertFromHexStringToInt(instruction));
             return bytes;
         }
+
         private byte ConvertFromHexStringToInt(string instruction)
         {
             var isValid = CheckValidityOfHex(instruction);
